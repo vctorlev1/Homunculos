@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Cacaonnattenie – Liberação de Insumos</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg-dark:     #1a0e08;
+    --bg-card:     #2b1a10;
+    --bg-row:      #f5ede4;
+    --bg-row-alt:  #ede0d4;
+    --gold:        #c8922a;
+    --gold-light:  #e8b84b;
+    --cream:       #f5ede4;
+    --text-dark:   #1a0e08;
+    --text-light:  #f0e0cc;
+    --text-muted:  #a07850;
+    --green:       #2d6a2d;
+    --green-light: #4caf50;
+    --red:         #8b1a1a;
+    --red-light:   #e53935;
+    --blue:        #1565c0;
+    --blue-light:  #42a5f5;
+    --amber:       #e65100;
+    --amber-light: #ff9800;
+    --border:      rgba(200,146,42,0.25);
+    --shadow:      0 4px 24px rgba(0,0,0,0.45);
+    --radius:      6px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Lato', sans-serif;
+    background: var(--cream);
+    color: var(--text-dark);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ─── NAV ─────────────────────────────────── */
+  nav {
+    background: var(--bg-dark);
+    padding: 0 40px;
+    display: flex;
+    align-items: center;
+    height: 56px;
+    gap: 32px;
+  }
+  .nav-brand {
+    font-family: 'Cinzel', serif;
+    color: var(--gold);
+    font-size: 1.1rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .nav-brand::before { content: '◈'; font-size: 1rem; }
+  .nav-links {
+    display: flex;
+    gap: 0;
+    list-style: none;
+    margin-left: auto;
+    align-items: center;
+  }
+  .nav-links a {
+    color: #b09070;
+    text-decoration: none;
+    font-size: 0.7rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    padding: 0 14px;
+    line-height: 56px;
+    transition: color .2s;
+  }
+  .nav-links a:hover { color: var(--gold-light); }
+  .nav-links a.active { color: var(--gold); border-bottom: 2px solid var(--gold); }
+  .nav-sub {
+    background: rgba(30,16,8,.95);
+    padding: 4px 40px;
+    display: flex;
+    gap: 24px;
+  }
+  .nav-sub a {
+    color: #a08060;
+    font-size: .68rem;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    text-decoration: none;
+    padding: 6px 0;
+    transition: color .2s;
+  }
+  .nav-sub a.active { color: var(--gold); border-bottom: 2px solid var(--gold); }
+  .nav-sub a:hover { color: var(--gold-light); }
+  .nav-user { color: #a08060; margin-left: 24px; cursor: pointer; font-size: 1.2rem; }
+
+  /* ─── HERO HEADER ─────────────────────────── */
+  .hero {
+    background: linear-gradient(135deg, #1a0e08 0%, #3d1f0d 50%, #5c2e10 100%);
+    padding: 32px 40px 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid var(--border);
+  }
+  .hero h1 {
+    font-family: 'Cinzel', serif;
+    color: var(--cream);
+    font-size: 1.8rem;
+    font-weight: 600;
+    letter-spacing: .03em;
+  }
+  .hero h1 span {
+    display: block;
+    width: 48px;
+    height: 3px;
+    background: var(--gold);
+    margin-top: 8px;
+    border-radius: 2px;
+  }
+  .hero-controls { display: flex; gap: 12px; align-items: center; }
+  .search-box {
+    background: rgba(255,255,255,.08);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 8px 16px;
+    color: var(--cream);
+    font-size: .82rem;
+    width: 240px;
+    outline: none;
+    transition: border-color .2s, background .2s;
+  }
+  .search-box::placeholder { color: #a07850; }
+  .search-box:focus { border-color: var(--gold); background: rgba(255,255,255,.12); }
+  select.filter-select {
+    background: rgba(255,255,255,.08);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 8px 14px;
+    color: var(--cream);
+    font-size: .82rem;
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    padding-right: 32px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23c8922a'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+  }
+  select.filter-select option { background: #2b1a10; }
+
+  /* ─── KPI CARDS ───────────────────────────── */
+  .kpi-bar {
+    background: linear-gradient(135deg, #1a0e08 0%, #3d1f0d 50%, #5c2e10 100%);
+    padding: 0 40px 28px;
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .kpi-card {
+    background: rgba(255,255,255,.06);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 22px;
+    min-width: 130px;
+    cursor: default;
+    transition: background .2s;
+  }
+  .kpi-card:hover { background: rgba(255,255,255,.1); }
+  .kpi-label { font-size: .62rem; letter-spacing: .12em; text-transform: uppercase; color: #a07850; margin-bottom: 6px; }
+  .kpi-value { font-family: 'Cinzel', serif; font-size: 1.6rem; font-weight: 700; color: var(--cream); }
+  .kpi-card.green .kpi-value  { color: #81c784; }
+  .kpi-card.red   .kpi-value  { color: #ef9a9a; }
+  .kpi-card.amber .kpi-value  { color: #ffcc80; }
+  .kpi-card.blue  .kpi-value  { color: #90caf9; }
+
+  /* ─── MAIN ────────────────────────────────── */
+  main { flex: 1; padding: 32px 40px; }
+
+  /* ─── SECTION HEADER ──────────────────────── */
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+  }
+  .section-title {
+    font-size: .72rem;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    color: var(--text-dark);
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-title::before {
+    content: '';
+    display: block;
+    width: 28px;
+    height: 3px;
+    background: var(--gold);
+    border-radius: 2px;
+  }
+  .btn-new {
+    background: var(--bg-dark);
+    color: var(--cream);
+    border: none;
+    border-radius: var(--radius);
+    padding: 10px 20px;
+    font-family: 'Lato', sans-serif;
+    font-size: .78rem;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background .2s, transform .1s;
+  }
+  .btn-new:hover { background: #3d1f0d; transform: translateY(-1px); }
+  .btn-new:active { transform: translateY(0); }
+
+  /* ─── TABLE ───────────────────────────────── */
+  .table-wrap {
+    background: #fff;
+    border-radius: var(--radius);
+    box-shadow: 0 2px 16px rgba(0,0,0,.08);
+    overflow: hidden;
+  }
+  table { width: 100%; border-collapse: collapse; font-size: .82rem; }
+  thead tr { background: var(--bg-dark); }
+  thead th {
+    padding: 13px 14px;
+    text-align: left;
+    font-size: .63rem;
+    letter-spacing: .13em;
+    text-transform: uppercase;
+    color: #a07850;
+    font-weight: 400;
+    white-space: nowrap;
+  }
+  thead th:first-child { width: 36px; }
+  tbody tr { background: var(--bg-row); border-bottom: 1px solid #e0d0c0; transition: background .15s; }
+  tbody tr:nth-child(even) { background: var(--bg-row-alt); }
+  tbody tr:hover { background: #ffe8cc; }
+  tbody td { padding: 12px 14px; vertical-align: middle; }
+  tbody td input[type=checkbox] {
+    width: 14px; height: 14px; accent-color: var(--gold); cursor: pointer;
+  }
+  .td-id { font-weight: 700; color: var(--text-dark); font-size: .78rem; }
+  .td-insumo { font-weight: 700; }
+  .td-muted { color: #806040; font-size: .78rem; }
+
+  /* Progress bar */
+  .progress-wrap { display: flex; align-items: center; gap: 8px; }
+  .progress-bar {
+    flex: 1; height: 7px; background: #d0c0b0; border-radius: 4px; overflow: hidden; min-width: 80px;
+  }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, #c8922a, #e8b84b); border-radius: 4px; transition: width .4s; }
+  .progress-pct { font-size: .75rem; color: #806040; white-space: nowrap; }
+
+  /* Status badge */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .04em;
+    white-space: nowrap;
+  }
+  .badge::before { content: '●'; font-size: .55rem; }
+  .badge-pendente   { background: #fff3e0; color: #e65100; }
+  .badge-aprovado   { background: #e8f5e9; color: #2e7d32; }
+  .badge-separando  { background: #e3f2fd; color: #1565c0; }
+  .badge-liberado   { background: #f3e5f5; color: #6a1b9a; }
+  .badge-cancelado  { background: #fce4ec; color: #880e4f; }
+
+  /* Action buttons */
+  .actions { display: flex; gap: 5px; }
+  .act-btn {
+    width: 28px; height: 28px;
+    border: none; border-radius: 4px;
+    cursor: pointer; font-size: .78rem;
+    display: flex; align-items: center; justify-content: center;
+    transition: opacity .15s, transform .1s;
+  }
+  .act-btn:hover { opacity: .85; transform: scale(1.1); }
+  .act-btn:active { transform: scale(.95); }
+  .btn-view   { background: #c8922a; color: #fff; }
+  .btn-edit   { background: #1565c0; color: #fff; }
+  .btn-approve{ background: #2d6a2d; color: #fff; }
+  .btn-confirm{ background: #4caf50; color: #fff; }
+  .btn-cancel { background: #c62828; color: #fff; }
+
+  /* ─── FOOTER BAR ──────────────────────────── */
+  .footer-bar {
+    background: var(--bg-dark);
+    padding: 14px 40px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .footer-label {
+    font-size: .65rem;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: #a07850;
+    margin-right: 6px;
+  }
+  .footer-btn {
+    background: transparent;
+    border: 1px solid #604030;
+    border-radius: 20px;
+    padding: 7px 16px;
+    color: #c0a080;
+    font-size: .72rem;
+    font-family: 'Lato', sans-serif;
+    letter-spacing: .08em;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 7px;
+    transition: border-color .2s, color .2s, background .2s;
+  }
+  .footer-btn:hover { border-color: var(--gold); color: var(--gold-light); }
+  .footer-btn.active { background: var(--gold); border-color: var(--gold); color: var(--bg-dark); font-weight: 700; }
+  .footer-contact { color: #604030; font-size: .72rem; margin-right: auto; }
+  .footer-phone { color: #604030; font-size: .72rem; }
+
+  /* ─── SITE FOOTER ─────────────────────────── */
+  .site-footer {
+    background: var(--bg-dark);
+    border-top: 1px solid rgba(200,146,42,.15);
+    padding: 10px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .site-footer span { font-size: .7rem; color: #604030; }
+
+  /* ─── MODAL ───────────────────────────────── */
+  .modal-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,.65);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 32px;
+    width: 520px;
+    max-width: 95vw;
+    box-shadow: var(--shadow);
+    animation: slideIn .2s ease;
+  }
+  @keyframes slideIn { from { transform: translateY(-20px); opacity: 0; } to { transform: none; opacity: 1; } }
+  .modal-title {
+    font-family: 'Cinzel', serif;
+    color: var(--gold);
+    font-size: 1.1rem;
+    margin-bottom: 22px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .modal-close { background: none; border: none; color: #a07850; font-size: 1.3rem; cursor: pointer; }
+  .modal-close:hover { color: var(--cream); }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .form-group { display: flex; flex-direction: column; gap: 5px; }
+  .form-group.full { grid-column: 1/-1; }
+  .form-label { font-size: .68rem; letter-spacing: .1em; text-transform: uppercase; color: #a07850; }
+  .form-input, .form-select {
+    background: rgba(255,255,255,.07);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 9px 12px;
+    color: var(--cream);
+    font-family: 'Lato', sans-serif;
+    font-size: .85rem;
+    outline: none;
+    transition: border-color .2s;
+  }
+  .form-input:focus, .form-select:focus { border-color: var(--gold); }
+  .form-select option { background: #2b1a10; }
+  .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 22px; }
+  .btn-modal-cancel {
+    background: transparent; border: 1px solid #604030; color: #a07850;
+    border-radius: var(--radius); padding: 9px 20px; cursor: pointer; font-size: .82rem;
+    font-family: 'Lato', sans-serif; transition: border-color .2s, color .2s;
+  }
+  .btn-modal-cancel:hover { border-color: var(--gold); color: var(--gold-light); }
+  .btn-modal-save {
+    background: var(--gold); border: none; color: var(--bg-dark);
+    border-radius: var(--radius); padding: 9px 24px; cursor: pointer;
+    font-size: .82rem; font-weight: 700; font-family: 'Lato', sans-serif;
+    transition: background .2s;
+  }
+  .btn-modal-save:hover { background: var(--gold-light); }
+
+  /* detail modal */
+  .detail-row { display: flex; gap: 16px; margin-bottom: 12px; flex-wrap: wrap; }
+  .detail-item { flex: 1; min-width: 120px; }
+  .detail-key { font-size: .65rem; letter-spacing: .1em; text-transform: uppercase; color: #a07850; margin-bottom: 3px; }
+  .detail-val { color: var(--cream); font-size: .88rem; }
+
+  /* Toast */
+  #toast {
+    position: fixed; bottom: 80px; right: 32px;
+    background: var(--bg-dark); border: 1px solid var(--gold);
+    color: var(--cream); padding: 12px 20px; border-radius: 8px;
+    font-size: .82rem; opacity: 0; transform: translateY(10px);
+    transition: opacity .3s, transform .3s; pointer-events: none; z-index: 9999;
+  }
+  #toast.show { opacity: 1; transform: none; }
+
+  /* empty state */
+  .empty-row td {
+    text-align: center; padding: 40px; color: #a07850;
+    font-style: italic; font-size: .9rem;
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo"><span>🍫</span> Cacaonnattenie</div>
+  <ul class="nav-links">
+    <li><a href="estoque.html">menu<br/></a></li>
+    <li><a href="acompanhar entregas.html">acompanhar<br/>entrega</a></li>
+    <li><a href="liberacao insumos.html">liberaçao<br/>insumos</a></li>
+    <li><a href="negociar contrato.html" class="active">negociar<br/>contrato</a></li>
+    <li><a href="receber materiais.html">receber<br/>materiais</a></li>
+  </ul>
+</nav>
+<div class="nav-sub">
+  <a href="#">Entregas</a>
+  <a href="#" class="active">Liberação de Insumos</a>
+  <a href="#">Recebimento</a>
+  <a href="#">Histórico</a>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div>
+    <h1>Liberação de Insumos<span></span></h1>
+  </div>
+  <div class="hero-controls">
+    <input class="search-box" id="searchInput" type="text" placeholder="Buscar por ID, insumo ou solicitante…"/>
+    <select class="filter-select" id="filterStatus">
+      <option value="">Todos os status</option>
+      <option value="Pendente">Pendente</option>
+      <option value="Aprovado">Aprovado</option>
+      <option value="Separando">Separando</option>
+      <option value="Liberado">Liberado</option>
+      <option value="Cancelado">Cancelado</option>
+    </select>
+  </div>
+</div>
+
+<!-- KPI BAR -->
+<div class="kpi-bar">
+  <div class="kpi-card">
+    <div class="kpi-label">Total de Solicitações</div>
+    <div class="kpi-value" id="kpiTotal">0</div>
+  </div>
+  <div class="kpi-card amber">
+    <div class="kpi-label">Pendentes</div>
+    <div class="kpi-value" id="kpiPendente">0</div>
+  </div>
+  <div class="kpi-card blue">
+    <div class="kpi-label">Separando</div>
+    <div class="kpi-value" id="kpiSeparando">0</div>
+  </div>
+  <div class="kpi-card green">
+    <div class="kpi-label">Liberados</div>
+    <div class="kpi-value" id="kpiLiberado">0</div>
+  </div>
+  <div class="kpi-card red">
+    <div class="kpi-label">Cancelados</div>
+    <div class="kpi-value" id="kpiCancelado">0</div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<main>
+  <div class="section-header">
+    <div class="section-title">Gestão de Liberação de Insumos</div>
+    <button class="btn-new" id="btnNova">+ Nova Liberação</button>
+  </div>
+
+  <div class="table-wrap">
+    <table id="mainTable">
+      <thead>
+        <tr>
+          <th><input type="checkbox" id="checkAll"/></th>
+          <th>ID</th>
+          <th>Insumo</th>
+          <th>Quantidade</th>
+          <th>Solicitante</th>
+          <th>Setor</th>
+          <th>Prev. Liberação</th>
+          <th>Progresso</th>
+          <th>Status</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+  </div>
+</main>
+
+<!-- FOOTER BAR -->
+<div class="footer-bar">
+  <span class="footer-contact">Contact info@cacaonnattenie.com.br</span>
+  <span class="footer-label">Ações Rápidas</span>
+  <button class="footer-btn active" data-filter="">📋 Todas</button>
+  <button class="footer-btn" data-filter="Pendente">⏳ Pendentes</button>
+  <button class="footer-btn" data-filter="Separando">📦 Separando</button>
+  <button class="footer-btn" data-filter="Liberado">✅ Liberados</button>
+  <button class="footer-btn" id="btnConfirmSel">✔ Confirmar Selecionados</button>
+  <button class="footer-btn" id="btnExportPDF">📄 Exportar PDF</button>
+  <span class="footer-phone">(11) 695 722 9000</span>
+</div>
+
+<!-- MODAL: Nova / Editar -->
+<div class="modal-overlay" id="modalForm">
+  <div class="modal">
+    <div class="modal-title">
+      <span id="modalFormTitle">Nova Liberação de Insumo</span>
+      <button class="modal-close" id="modalFormClose">✕</button>
+    </div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label class="form-label">Insumo</label>
+        <input class="form-input" id="fInsumo" placeholder="Ex: Cacau em pó" type="text"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Quantidade (kg / un)</label>
+        <input class="form-input" id="fQtd" placeholder="Ex: 50 kg" type="text"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Solicitante</label>
+        <input class="form-input" id="fSolicitante" placeholder="Nome do responsável" type="text"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Setor</label>
+        <input class="form-input" id="fSetor" placeholder="Ex: Produção" type="text"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Prev. Liberação</label>
+        <input class="form-input" id="fData" type="date"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Status</label>
+        <select class="form-select" id="fStatus">
+          <option>Pendente</option>
+          <option>Aprovado</option>
+          <option>Separando</option>
+          <option>Liberado</option>
+          <option>Cancelado</option>
+        </select>
+      </div>
+      <div class="form-group full">
+        <label class="form-label">Observação</label>
+        <input class="form-input" id="fObs" placeholder="Informações adicionais…" type="text"/>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" id="modalFormCancel">Cancelar</button>
+      <button class="btn-modal-save" id="modalFormSave">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Detalhe -->
+<div class="modal-overlay" id="modalDetail">
+  <div class="modal">
+    <div class="modal-title">
+      <span>Detalhes da Liberação</span>
+      <button class="modal-close" id="modalDetailClose">✕</button>
+    </div>
+    <div id="detailContent"></div>
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" id="modalDetailOk">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script>
+/* ─── DATA STORE ─────────────────────────── */
+let insumos = [
+  { id:'INS001', insumo:'Cacau em Pó 100%',   qtd:'80 kg',  solicitante:'Ana Lima',    setor:'Produção',    data:'30/05/2026', progresso:75, status:'Separando' },
+  { id:'INS002', insumo:'Manteiga de Cacau',   qtd:'40 kg',  solicitante:'Carlos Mota', setor:'Embalagem',   data:'29/05/2026', progresso:20, status:'Pendente'  },
+  { id:'INS003', insumo:'Açúcar Refinado',     qtd:'120 kg', solicitante:'Beatriz Nunes',setor:'Confeitaria',data:'28/05/2026', progresso:100,status:'Liberado'  },
+  { id:'INS004', insumo:'Leite em Pó Integral',qtd:'60 kg',  solicitante:'Diego Sousa', setor:'Produção',    data:'31/05/2026', progresso:55, status:'Aprovado'  },
+  { id:'INS005', insumo:'Embalagem Kraft 200g',qtd:'500 un', solicitante:'Fernanda Paz',setor:'Embalagem',   data:'27/05/2026', progresso:0,  status:'Cancelado' },
+];
+let nextId = 6;
+let editingId = null;
+let activeFilter = '';
+
+/* ─── HELPERS ────────────────────────────── */
+const $ = id => document.getElementById(id);
+function toast(msg) {
+  const t = $('toast'); t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2600);
+}
+function badgeClass(s) {
+  return { Pendente:'badge-pendente', Aprovado:'badge-aprovado', Separando:'badge-separando', Liberado:'badge-liberado', Cancelado:'badge-cancelado' }[s] || '';
+}
+function progressFromStatus(s) {
+  return { Pendente:10, Aprovado:40, Separando:65, Liberado:100, Cancelado:0 }[s] ?? 0;
+}
+function fmt(id) { return 'INS' + String(id).padStart(3,'0'); }
+function today() { const d=new Date(); return d.toLocaleDateString('pt-BR'); }
+
+/* ─── RENDER ─────────────────────────────── */
+function render() {
+  updateKPIs();
+  const q = $('searchInput').value.trim().toLowerCase();
+  const sf = $('filterStatus').value || activeFilter;
+  let rows = insumos.filter(r => {
+    const matchQ = !q || r.id.toLowerCase().includes(q) || r.insumo.toLowerCase().includes(q) || r.solicitante.toLowerCase().includes(q);
+    const matchS = !sf || r.status === sf;
+    return matchQ && matchS;
+  });
+  const tbody = $('tableBody');
+  if (!rows.length) {
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="10">Nenhuma solicitação encontrada.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = rows.map(r => `
+    <tr data-id="${r.id}">
+      <td><input type="checkbox" class="row-check" data-id="${r.id}"/></td>
+      <td class="td-id">${r.id}</td>
+      <td class="td-insumo">${r.insumo}</td>
+      <td class="td-muted">${r.qtd}</td>
+      <td>${r.solicitante}</td>
+      <td class="td-muted">${r.setor}</td>
+      <td class="td-muted">${r.data}</td>
+      <td>
+        <div class="progress-wrap">
+          <div class="progress-bar"><div class="progress-fill" style="width:${r.progresso}%"></div></div>
+          <span class="progress-pct">${r.progresso}%</span>
+        </div>
+      </td>
+      <td><span class="badge ${badgeClass(r.status)}">${r.status}</span></td>
+      <td>
+        <div class="actions">
+          <button class="act-btn btn-view"    title="Ver detalhes"  onclick="viewItem('${r.id}')">👁</button>
+          <button class="act-btn btn-edit"    title="Editar"        onclick="editItem('${r.id}')">✏</button>
+          <button class="act-btn btn-approve" title="Aprovar"       onclick="approveItem('${r.id}')">✔</button>
+          <button class="act-btn btn-confirm" title="Liberar"       onclick="liberarItem('${r.id}')">📦</button>
+          <button class="act-btn btn-cancel"  title="Cancelar"      onclick="cancelItem('${r.id}')">✕</button>
+        </div>
+      </td>
+    </tr>`).join('');
+}
+function updateKPIs() {
+  $('kpiTotal').textContent    = insumos.length;
+  $('kpiPendente').textContent = insumos.filter(r=>r.status==='Pendente').length;
+  $('kpiSeparando').textContent= insumos.filter(r=>r.status==='Separando').length;
+  $('kpiLiberado').textContent = insumos.filter(r=>r.status==='Liberado').length;
+  $('kpiCancelado').textContent= insumos.filter(r=>r.status==='Cancelado').length;
+}
+
+/* ─── ACTIONS ────────────────────────────── */
+window.viewItem = function(id) {
+  const r = insumos.find(x=>x.id===id); if(!r) return;
+  $('detailContent').innerHTML = `
+    <div class="detail-row">
+      <div class="detail-item"><div class="detail-key">ID</div><div class="detail-val">${r.id}</div></div>
+      <div class="detail-item"><div class="detail-key">Status</div><div class="detail-val"><span class="badge ${badgeClass(r.status)}">${r.status}</span></div></div>
+    </div>
+    <div class="detail-row">
+      <div class="detail-item"><div class="detail-key">Insumo</div><div class="detail-val">${r.insumo}</div></div>
+      <div class="detail-item"><div class="detail-key">Quantidade</div><div class="detail-val">${r.qtd}</div></div>
+    </div>
+    <div class="detail-row">
+      <div class="detail-item"><div class="detail-key">Solicitante</div><div class="detail-val">${r.solicitante}</div></div>
+      <div class="detail-item"><div class="detail-key">Setor</div><div class="detail-val">${r.setor}</div></div>
+    </div>
+    <div class="detail-row">
+      <div class="detail-item"><div class="detail-key">Prev. Liberação</div><div class="detail-val">${r.data}</div></div>
+      <div class="detail-item"><div class="detail-key">Progresso</div><div class="detail-val">${r.progresso}%</div></div>
+    </div>`;
+  $('modalDetail').classList.add('open');
+};
+window.editItem = function(id) {
+  const r = insumos.find(x=>x.id===id); if(!r) return;
+  editingId = id;
+  $('modalFormTitle').textContent = 'Editar Liberação – ' + id;
+  $('fInsumo').value = r.insumo; $('fQtd').value = r.qtd;
+  $('fSolicitante').value = r.solicitante; $('fSetor').value = r.setor;
+  const parts = r.data.split('/'); $('fData').value = `${parts[2]}-${parts[1]}-${parts[0]}`;
+  $('fStatus').value = r.status; $('fObs').value = r.obs||'';
+  $('modalForm').classList.add('open');
+};
+window.approveItem = function(id) {
+  const r = insumos.find(x=>x.id===id); if(!r) return;
+  if(r.status==='Liberado'||r.status==='Cancelado') { toast('⚠ Não é possível aprovar este item.'); return; }
+  r.status = 'Aprovado'; r.progresso = 40;
+  render(); toast(`✔ ${id} aprovado com sucesso.`);
+};
+window.liberarItem = function(id) {
+  const r = insumos.find(x=>x.id===id); if(!r) return;
+  if(r.status==='Cancelado') { toast('⚠ Item cancelado não pode ser liberado.'); return; }
+  r.status = 'Liberado'; r.progresso = 100;
+  render(); toast(`📦 ${id} liberado para produção.`);
+};
+window.cancelItem = function(id) {
+  const r = insumos.find(x=>x.id===id); if(!r) return;
+  if(r.status==='Cancelado') { toast('ℹ Item já está cancelado.'); return; }
+  if(!confirm(`Cancelar a liberação ${id}?`)) return;
+  r.status = 'Cancelado'; r.progresso = 0;
+  render(); toast(`✕ ${id} cancelado.`);
+};
+
+/* ─── MODAL FORM ─────────────────────────── */
+function openNew() {
+  editingId = null;
+  $('modalFormTitle').textContent = 'Nova Liberação de Insumo';
+  ['fInsumo','fQtd','fSolicitante','fSetor','fObs'].forEach(f=>$(f).value='');
+  $('fStatus').value = 'Pendente';
+  const today2 = new Date().toISOString().split('T')[0];
+  $('fData').value = today2;
+  $('modalForm').classList.add('open');
+}
+$('btnNova').onclick = openNew;
+$('modalFormClose').onclick = $('modalFormCancel').onclick = () => $('modalForm').classList.remove('open');
+$('modalDetailClose').onclick = $('modalDetailOk').onclick  = () => $('modalDetail').classList.remove('open');
+$('modalForm').onclick = e => { if(e.target===$('modalForm')) $('modalForm').classList.remove('open'); };
+$('modalDetail').onclick = e => { if(e.target===$('modalDetail')) $('modalDetail').classList.remove('open'); };
+
+$('modalFormSave').onclick = () => {
+  const insumo = $('fInsumo').value.trim();
+  const qtd    = $('fQtd').value.trim();
+  const sol    = $('fSolicitante').value.trim();
+  const setor  = $('fSetor').value.trim();
+  const dRaw   = $('fData').value;
+  if(!insumo||!qtd||!sol||!setor||!dRaw) { toast('⚠ Preencha todos os campos obrigatórios.'); return; }
+  const parts = dRaw.split('-');
+  const dataFmt = `${parts[2]}/${parts[1]}/${parts[0]}`;
+  const status = $('fStatus').value;
+  if(editingId) {
+    const r = insumos.find(x=>x.id===editingId);
+    Object.assign(r, { insumo, qtd, solicitante:sol, setor, data:dataFmt, status, progresso:progressFromStatus(status), obs:$('fObs').value });
+    toast(`✏ ${editingId} atualizado.`);
+  } else {
+    const newId = fmt(nextId++);
+    insumos.push({ id:newId, insumo, qtd, solicitante:sol, setor, data:dataFmt, progresso:progressFromStatus(status), status, obs:$('fObs').value });
+    toast(`✔ ${newId} criado com sucesso.`);
+  }
+  $('modalForm').classList.remove('open');
+  render();
+};
+
+/* ─── SEARCH / FILTER ────────────────────── */
+$('searchInput').oninput = render;
+$('filterStatus').onchange = () => {
+  activeFilter = '';
+  document.querySelectorAll('.footer-btn[data-filter]').forEach(b=>b.classList.remove('active'));
+  document.querySelector('.footer-btn[data-filter=""]').classList.add('active');
+  render();
+};
+
+/* ─── CHECK ALL ──────────────────────────── */
+$('checkAll').onchange = function() {
+  document.querySelectorAll('.row-check').forEach(c=>c.checked=this.checked);
+};
+
+/* ─── FOOTER BUTTONS ─────────────────────── */
+document.querySelectorAll('.footer-btn[data-filter]').forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll('.footer-btn[data-filter]').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    activeFilter = btn.dataset.filter;
+    $('filterStatus').value = '';
+    render();
+  };
+});
+
+$('btnConfirmSel').onclick = () => {
+  const selected = [...document.querySelectorAll('.row-check:checked')].map(c=>c.dataset.id);
+  if(!selected.length) { toast('⚠ Nenhum item selecionado.'); return; }
+  selected.forEach(id => {
+    const r = insumos.find(x=>x.id===id);
+    if(r && r.status!=='Cancelado' && r.status!=='Liberado') { r.status='Liberado'; r.progresso=100; }
+  });
+  $('checkAll').checked = false;
+  render(); toast(`📦 ${selected.length} item(ns) liberado(s).`);
+};
+
+$('btnExportPDF').onclick = () => {
+  const rows = insumos.map(r=>`${r.id} | ${r.insumo} | ${r.qtd} | ${r.solicitante} | ${r.setor} | ${r.data} | ${r.status}`).join('\n');
+  const blob = new Blob([`CACAONNATTENIE – LIBERAÇÃO DE INSUMOS\n${'='.repeat(60)}\n\n${rows}\n\nGerado em: ${new Date().toLocaleString('pt-BR')}`], {type:'text/plain'});
+  const a = document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download='liberacao_insumos.txt'; a.click();
+  toast('📄 Relatório exportado.');
+};
+
+/* ─── INIT ───────────────────────────────── */
+render();
+</script>
+</body>
+</html>
