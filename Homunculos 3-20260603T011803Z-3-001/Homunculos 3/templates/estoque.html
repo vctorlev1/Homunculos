@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Fábrica de Chocolate – Estoque</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --choco-dark: #3b1f0a;
+    --choco-mid:  #6b3a1f;
+    --choco-light:#a0522d;
+    --choco-accent:#c8741a;
+    --cream:      #fdf6ee;
+    --card-bg:    #ffffff;
+    --green:      #22c55e;
+    --green-bg:   #dcfce7;
+    --orange:     #f97316;
+    --orange-bg:  #ffedd5;
+    --red:        #ef4444;
+    --red-bg:     #fee2e2;
+    --badge-ingr: #fde8c8;
+    --badge-emb:  #e8d8fa;
+    --text:       #1c0f05;
+    --muted:      #7c5a3e;
+    --border:     #e8d5c0;
+    --shadow:     0 2px 12px rgba(59,31,10,.10);
+    --radius:     14px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Nunito',sans-serif;background:var(--cream);color:var(--text);min-height:100vh}
+
+  /* ── HEADER ── */
+  header{
+    background:linear-gradient(135deg,var(--choco-dark) 0%,var(--choco-mid) 100%);
+    padding:0 32px;height:62px;display:flex;align-items:center;justify-content:space-between;
+    box-shadow:0 3px 16px rgba(59,31,10,.35);
+  }
+  .header-left{display:flex;align-items:center;gap:10px}
+  .header-left span.logo{font-size:22px}
+  .header-left h1{color:#fff;font-size:18px;font-weight:800;letter-spacing:.3px}
+  .header-right{display:flex;align-items:center;gap:8px;color:#e8d5c0;font-weight:700;font-size:14px;cursor:pointer}
+  .avatar{width:32px;height:32px;border-radius:50%;border:2px solid rgba(255,255,255,.3);
+    display:flex;align-items:center;justify-content:center;font-size:16px;background:rgba(255,255,255,.15)}
+
+  /* ── MAIN ── */
+  main{max-width:1100px;margin:0 auto;padding:28px 24px 60px}
+
+  .page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px}
+  .page-title{display:flex;align-items:center;gap:10px}
+  .page-title h2{font-size:28px;font-weight:900;color:var(--choco-dark)}
+  .page-title p{color:var(--muted);font-size:13px;margin-top:3px;font-weight:600}
+
+  /* ── STATS ── */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:26px}
+  @media(max-width:700px){.stats{grid-template-columns:repeat(2,1fr)}}
+  .stat-card{background:var(--card-bg);border-radius:var(--radius);padding:16px 18px;
+    display:flex;align-items:center;gap:14px;box-shadow:var(--shadow);border:1px solid var(--border);
+    transition:transform .15s,box-shadow .15s}
+  .stat-card:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(59,31,10,.14)}
+  .stat-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+  .stat-icon.total{background:#f3e8d6}
+  .stat-icon.ok{background:var(--green-bg)}
+  .stat-icon.low{background:var(--orange-bg)}
+  .stat-icon.out{background:var(--red-bg)}
+  .stat-info label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+  .stat-info .num{font-size:28px;font-weight:900;line-height:1.1;margin-top:2px}
+  .stat-info .sub{font-size:11px;color:var(--muted);font-weight:600}
+  .num.total-clr{color:var(--choco-dark)}
+  .num.ok-clr{color:var(--green)}
+  .num.low-clr{color:var(--orange)}
+  .num.out-clr{color:var(--red)}
+
+  /* ── TOOLBAR ── */
+  .toolbar{display:flex;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap}
+  .search-wrap{position:relative;flex:1;min-width:200px;max-width:340px}
+  .search-wrap svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none}
+  #searchInput{width:100%;padding:10px 12px 10px 38px;border:1.5px solid var(--border);border-radius:10px;
+    font-family:'Nunito',sans-serif;font-size:14px;font-weight:600;background:#fff;color:var(--text);outline:none;transition:border .2s}
+  #searchInput:focus{border-color:var(--choco-light)}
+  .filter-select{padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;
+    font-family:'Nunito',sans-serif;font-size:14px;font-weight:600;background:#fff;color:var(--text);outline:none;cursor:pointer}
+  .btn-new{margin-left:auto;background:var(--choco-dark);color:#fff;padding:10px 20px;border:none;border-radius:10px;
+    font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:6px;
+    transition:background .2s,transform .1s,box-shadow .2s;box-shadow:0 3px 10px rgba(59,31,10,.3)}
+  .btn-new:hover{background:var(--choco-mid);transform:translateY(-1px);box-shadow:0 5px 18px rgba(59,31,10,.35)}
+  .btn-new:active{transform:translateY(0)}
+
+  /* ── TABLE ── */
+  .table-wrap{background:var(--card-bg);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;border:1px solid var(--border)}
+  table{width:100%;border-collapse:collapse}
+  thead tr{background:var(--choco-dark)}
+  thead th{padding:14px 16px;text-align:left;color:#e8d5c0;font-size:12px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;white-space:nowrap}
+  thead th.center{text-align:center}
+  thead th .sort{display:inline-flex;flex-direction:column;gap:1px;vertical-align:middle;margin-left:4px;opacity:.6}
+  thead th .sort svg{display:block}
+  tbody tr{border-bottom:1px solid var(--border);transition:background .15s}
+  tbody tr:last-child{border-bottom:none}
+  tbody tr:hover{background:#fdf0e4}
+  tbody td{padding:14px 16px;font-size:14px;font-weight:700;vertical-align:middle}
+  .item-cell{display:flex;align-items:center;gap:12px}
+  .item-emoji{width:42px;height:42px;border-radius:10px;background:var(--badge-ingr);
+    display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+  .item-emoji.emb{background:var(--badge-emb)}
+  .item-name{font-weight:800;color:var(--choco-dark)}
+  .badge{display:inline-block;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:800;letter-spacing:.3px}
+  .badge.ingrediente{background:var(--badge-ingr);color:#b45309}
+  .badge.embalagem{background:var(--badge-emb);color:#7c3aed}
+  .qty{font-weight:900;font-size:15px}
+  .status-pill{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:800}
+  .status-pill.em_estoque{background:var(--green-bg);color:#15803d}
+  .status-pill.estoque_baixo{background:var(--orange-bg);color:#c2410c}
+  .status-pill.sem_estoque{background:var(--red-bg);color:#b91c1c}
+  .status-icon{font-size:13px}
+  .actions{display:flex;gap:8px;justify-content:flex-end}
+  .btn-icon{width:32px;height:32px;border:none;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+  .btn-edit{background:#f3e8d6;color:var(--choco-mid)}
+  .btn-edit:hover{background:#e8d5c0;color:var(--choco-dark)}
+  .btn-del{background:var(--red-bg);color:var(--red)}
+  .btn-del:hover{background:#fecaca}
+  .btn-add-qty{background:var(--green-bg);color:var(--green)}
+  .btn-add-qty:hover{background:#bbf7d0}
+
+  /* ── FOOTER ── */
+  .footer{margin-top:18px;text-align:center;color:var(--muted);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:6px}
+
+  /* ── EMPTY ── */
+  .empty{padding:60px;text-align:center;color:var(--muted);font-weight:700;font-size:15px}
+  .empty span{font-size:40px;display:block;margin-bottom:10px}
+
+  /* ── MODAL ── */
+  .overlay{position:fixed;inset:0;background:rgba(30,12,2,.55);backdrop-filter:blur(3px);z-index:100;display:none;align-items:center;justify-content:center;padding:20px}
+  .overlay.open{display:flex}
+  .modal{background:#fff;border-radius:18px;padding:30px 28px;width:100%;max-width:460px;box-shadow:0 20px 60px rgba(59,31,10,.35);animation:slideUp .22s ease}
+  @keyframes slideUp{from{transform:translateY(24px);opacity:0}to{transform:translateY(0);opacity:1}}
+  .modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
+  .modal-header h3{font-size:20px;font-weight:900;color:var(--choco-dark)}
+  .btn-close{background:none;border:none;cursor:pointer;color:var(--muted);font-size:22px;line-height:1;padding:4px}
+  .btn-close:hover{color:var(--choco-dark)}
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+  .form-row.single{grid-template-columns:1fr}
+  .field label{display:block;font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+  .field input,.field select{width:100%;padding:10px 13px;border:1.5px solid var(--border);border-radius:9px;
+    font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;color:var(--text);outline:none;transition:border .2s;background:#fff}
+  .field input:focus,.field select:focus{border-color:var(--choco-light)}
+  .emoji-picker{display:flex;gap:8px;flex-wrap:wrap}
+  .emoji-opt{width:36px;height:36px;border-radius:8px;background:#f5f5f5;border:2px solid transparent;
+    font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+  .emoji-opt.selected,.emoji-opt:hover{background:var(--badge-ingr);border-color:var(--choco-light)}
+  .modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:22px}
+  .btn-cancel{padding:10px 20px;background:#f5f0eb;color:var(--muted);border:none;border-radius:9px;
+    font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;cursor:pointer}
+  .btn-cancel:hover{background:var(--border)}
+  .btn-save{padding:10px 24px;background:var(--choco-dark);color:#fff;border:none;border-radius:9px;
+    font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;cursor:pointer;box-shadow:0 3px 10px rgba(59,31,10,.25)}
+  .btn-save:hover{background:var(--choco-mid)}
+
+  /* ── CONFIRM MODAL ── */
+  .confirm-modal{max-width:360px;text-align:center}
+  .confirm-modal .icon-big{font-size:44px;margin-bottom:10px}
+  .confirm-modal p{color:var(--muted);font-size:14px;font-weight:700;margin-top:6px}
+  .modal-actions.center{justify-content:center}
+  .btn-danger{padding:10px 24px;background:var(--red);color:#fff;border:none;border-radius:9px;
+    font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;cursor:pointer}
+  .btn-danger:hover{background:#dc2626}
+
+  /* ── QTY MODAL ── */
+  .qty-modal{max-width:340px}
+  .qty-controls{display:flex;align-items:center;gap:14px;margin:16px 0}
+  .qty-btn{width:38px;height:38px;border-radius:9px;border:none;background:var(--choco-dark);color:#fff;font-size:20px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center}
+  .qty-btn:hover{background:var(--choco-mid)}
+  #qtyInput{flex:1;padding:10px;border:1.5px solid var(--border);border-radius:9px;text-align:center;font-family:'Nunito',sans-serif;font-size:22px;font-weight:900;color:var(--choco-dark);outline:none}
+
+  /* ── TOAST ── */
+  .toast{position:fixed;bottom:28px;right:28px;background:var(--choco-dark);color:#fff;padding:13px 20px;border-radius:12px;
+    font-weight:800;font-size:14px;box-shadow:0 6px 24px rgba(59,31,10,.35);z-index:999;
+    display:flex;align-items:center;gap:8px;transform:translateY(80px);opacity:0;transition:all .3s cubic-bezier(.34,1.56,.64,1)}
+  .toast.show{transform:translateY(0);opacity:1}
+  .toast.success{background:#15803d}
+  .toast.error{background:var(--red)}
+
+  /* ── NAV MODULE ── */
+  .nav-module{margin-bottom:28px}
+  .nav-module-title{font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+  .nav-module-title::after{content:'';flex:1;height:1px;background:var(--border)}
+  .nav-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  @media(max-width:900px){.nav-grid{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:500px){.nav-grid{grid-template-columns:1fr}}
+  .nav-card{background:var(--card-bg);border:1.5px solid var(--border);border-radius:var(--radius);
+    padding:16px 18px;display:flex;align-items:center;gap:14px;cursor:pointer;text-decoration:none;
+    transition:transform .18s,box-shadow .18s,border-color .18s;box-shadow:var(--shadow);position:relative;overflow:hidden}
+  .nav-card::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity .2s}
+  .nav-card:hover{transform:translateY(-3px);box-shadow:0 8px 28px rgba(59,31,10,.16);border-color:transparent}
+  .nav-card:hover::before{opacity:1}
+  .nav-card:active{transform:translateY(-1px)}
+  .nav-card-icon{width:46px;height:46px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;position:relative;z-index:1}
+  .nav-card-body{position:relative;z-index:1}
+  .nav-card-body strong{display:block;font-size:13px;font-weight:900;color:var(--choco-dark);line-height:1.2;margin-bottom:3px}
+  .nav-card-body span{font-size:11px;font-weight:600;color:var(--muted)}
+  .nav-card-arrow{margin-left:auto;color:var(--muted);opacity:.5;font-size:16px;position:relative;z-index:1;transition:transform .18s,opacity .18s}
+  .nav-card:hover .nav-card-arrow{transform:translateX(3px);opacity:1}
+
+  /* card color variants */
+  .nav-card.blue{border-color:#bfdbfe}
+  .nav-card.blue::before{background:linear-gradient(135deg,#eff6ff,#dbeafe)}
+  .nav-card.blue .nav-card-icon{background:#dbeafe;color:#1d4ed8}
+  .nav-card.blue:hover .nav-card-body strong{color:#1e40af}
+
+  .nav-card.emerald{border-color:#a7f3d0}
+  .nav-card.emerald::before{background:linear-gradient(135deg,#f0fdf4,#d1fae5)}
+  .nav-card.emerald .nav-card-icon{background:#d1fae5;color:#065f46}
+  .nav-card.emerald:hover .nav-card-body strong{color:#047857}
+
+  .nav-card.amber{border-color:#fcd34d}
+  .nav-card.amber::before{background:linear-gradient(135deg,#fffbeb,#fef3c7)}
+  .nav-card.amber .nav-card-icon{background:#fef3c7;color:#92400e}
+  .nav-card.amber:hover .nav-card-body strong{color:#b45309}
+
+  .nav-card.violet{border-color:#ddd6fe}
+  .nav-card.violet::before{background:linear-gradient(135deg,#f5f3ff,#ede9fe)}
+  .nav-card.violet .nav-card-icon{background:#ede9fe;color:#5b21b6}
+  .nav-card.violet:hover .nav-card-body strong{color:#6d28d9}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-left">
+    <span class="logo">🏭</span>
+    <h1>Fábrica de Chocolate</h1>
+  </div>
+  <div class="header-right">
+    <div class="avatar">👤</div>
+    Administrador ▾
+  </div>
+</header>
+
+<!-- MAIN -->
+<main>
+  <div class="page-header">
+    <div class="page-title">
+      <div>
+        <h2>🍫 Estoque</h2>
+        <p>Gerencie os ingredientes, materiais e embalagens da fábrica.</p>
+      </div>
+    </div>
+    <button class="btn-new" onclick="openModal()">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" d="M12 5v14M5 12h14"/></svg>
+      Novo Item
+    </button>
+  </div>
+
+  <!-- NAV MODULE -->
+  <div class="nav-module">
+    <div class="nav-module-title">🏭 Módulos do Sistema</div>
+    <div class="nav-grid">
+
+      <a href="acompanhar entregas.html" class="nav-card blue">
+        <div class="nav-card-icon">🚚</div>
+        <div class="nav-card-body">
+          <strong>Acompanhar Entrega</strong>
+          <span>Rastreie pedidos em trânsito</span>
+        </div>
+        <div class="nav-card-arrow">→</div>
+      </a>
+
+      <a href="negociar contrato.html" class="nav-card violet">
+        <div class="nav-card-icon">📝</div>
+        <div class="nav-card-body">
+          <strong>Negociar Contratos</strong>
+          <span>Fornecedores e acordos</span>
+        </div>
+        <div class="nav-card-arrow">→</div>
+      </a>
+
+      <a href="receber materiais.html" class="nav-card amber">
+        <div class="nav-card-icon">📥</div>
+        <div class="nav-card-body">
+          <strong>Receber Materiais</strong>
+          <span>Entrada de insumos e embalagens</span>
+        </div>
+        <div class="nav-card-arrow">→</div>
+      </a>
+
+      <a href="liberacao insumos.html" class="nav-card emerald">
+        <div class="nav-card-icon">🏗️</div>
+        <div class="nav-card-body">
+          <strong>Liberar para Produção</strong>
+          <span>Saída de insumos ao chão de fábrica</span>
+        </div>
+        <div class="nav-card-arrow">→</div>
+      </a>
+
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat-card">
+      <div class="stat-icon total">📦</div>
+      <div class="stat-info">
+        <label>Total de Itens</label>
+        <div class="num total-clr" id="st-total">0</div>
+        <div class="sub">cadastrados</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon ok">✅</div>
+      <div class="stat-info">
+        <label>Em Estoque</label>
+        <div class="num ok-clr" id="st-ok">0</div>
+        <div class="sub">itens</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon low">⚠️</div>
+      <div class="stat-info">
+        <label>Estoque Baixo</label>
+        <div class="num low-clr" id="st-low">0</div>
+        <div class="sub">itens</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon out">❌</div>
+      <div class="stat-info">
+        <label>Sem Estoque</label>
+        <div class="num out-clr" id="st-out">0</div>
+        <div class="sub">itens</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOOLBAR -->
+  <div class="toolbar">
+    <div class="search-wrap">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path stroke-linecap="round" d="m21 21-4.35-4.35"/></svg>
+      <input id="searchInput" type="text" placeholder="Buscar item..." oninput="loadItems()">
+    </div>
+    <select class="filter-select" id="filterCat" onchange="loadItems()">
+      <option value="">Todas categorias</option>
+      <option value="Ingrediente">Ingrediente</option>
+      <option value="Embalagem">Embalagem</option>
+    </select>
+  </div>
+
+  <!-- TABLE -->
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Item <span class="sort"><svg width="8" height="5" viewBox="0 0 8 5"><path fill="currentColor" d="M0 5 4 0 8 5z"/></svg><svg width="8" height="5" viewBox="0 0 8 5"><path fill="currentColor" d="M0 0 4 5 8 0z"/></svg></span></th>
+          <th>Categoria <span class="sort"><svg width="8" height="5" viewBox="0 0 8 5"><path fill="currentColor" d="M0 5 4 0 8 5z"/></svg><svg width="8" height="5" viewBox="0 0 8 5"><path fill="currentColor" d="M0 0 4 5 8 0z"/></svg></span></th>
+          <th>Unidade <span class="sort"><svg width="8" height="5" viewBox="0 0 8 5"><path fill="currentColor" d="M0 5 4 0 8 5z"/></svg><svg width="8" height="5" viewBox="0 0 8 5"><path fill="currentColor" d="M0 0 4 5 8 0z"/></svg></span></th>
+          <th>Quantidade <span class="sort"><svg width="8" height="5" viewBox="0 0 8 5"><path fill="currentColor" d="M0 5 4 0 8 5z"/></svg><svg width="8" height="5" viewBox="0 0 8 5"><path fill="currentColor" d="M0 0 4 5 8 0z"/></svg></span></th>
+          <th>Status <span class="sort"><svg width="8" height="5" viewBox="0 0 8 5"><path fill="currentColor" d="M0 5 4 0 8 5z"/></svg><svg width="8" height="5" viewBox="0 0 8 5"><path fill="currentColor" d="M0 0 4 5 8 0z"/></svg></span></th>
+          <th class="center">Ações</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody">
+        <tr><td colspan="6" class="empty"><span>⏳</span>Carregando...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="footer">
+    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path stroke-linecap="round" d="M12 6v6l4 2"/></svg>
+    Última atualização: <span id="lastUpdate">–</span>
+  </div>
+</main>
+
+<!-- ── MODAL: NOVO / EDITAR ITEM ── -->
+<div class="overlay" id="itemOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modalTitle">Novo Item</h3>
+      <button class="btn-close" onclick="closeModal()">✕</button>
+    </div>
+    <input type="hidden" id="editId"/>
+
+    <div class="field" style="margin-bottom:14px">
+      <label>Emoji / Ícone</label>
+      <div class="emoji-picker" id="emojiPicker">
+        <span class="emoji-opt selected" data-emoji="🍫" onclick="selectEmoji(this)">🍫</span>
+        <span class="emoji-opt" data-emoji="🍬" onclick="selectEmoji(this)">🍬</span>
+        <span class="emoji-opt" data-emoji="🥛" onclick="selectEmoji(this)">🥛</span>
+        <span class="emoji-opt" data-emoji="📦" onclick="selectEmoji(this)">📦</span>
+        <span class="emoji-opt" data-emoji="🎁" onclick="selectEmoji(this)">🎁</span>
+        <span class="emoji-opt" data-emoji="🧈" onclick="selectEmoji(this)">🧈</span>
+        <span class="emoji-opt" data-emoji="🌿" onclick="selectEmoji(this)">🌿</span>
+        <span class="emoji-opt" data-emoji="🍪" onclick="selectEmoji(this)">🍪</span>
+        <span class="emoji-opt" data-emoji="☕" onclick="selectEmoji(this)">☕</span>
+        <span class="emoji-opt" data-emoji="🫙" onclick="selectEmoji(this)">🫙</span>
+      </div>
+    </div>
+
+    <div class="form-row single">
+      <div class="field">
+        <label>Nome do Item *</label>
+        <input type="text" id="fNome" placeholder="Ex: Cacau em Pó"/>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="field">
+        <label>Categoria *</label>
+        <select id="fCategoria">
+          <option value="Ingrediente">Ingrediente</option>
+          <option value="Embalagem">Embalagem</option>
+          <option value="Material">Material</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Unidade *</label>
+        <select id="fUnidade">
+          <option value="kg">kg</option>
+          <option value="g">g</option>
+          <option value="l">L</option>
+          <option value="ml">ml</option>
+          <option value="un">un</option>
+          <option value="cx">cx</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="field">
+        <label>Quantidade *</label>
+        <input type="number" id="fQtd" placeholder="0" min="0" step="0.01"/>
+      </div>
+      <div class="field">
+        <label>Qtd. Mínima *</label>
+        <input type="number" id="fMin" placeholder="10" min="0" step="0.01"/>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+      <button class="btn-save" onclick="saveItem()">💾 Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── MODAL: CONFIRMAR EXCLUSÃO ── -->
+<div class="overlay" id="confirmOverlay">
+  <div class="modal confirm-modal">
+    <div class="icon-big">🗑️</div>
+    <div class="modal-header" style="justify-content:center;border:none">
+      <h3>Excluir Item</h3>
+    </div>
+    <p>Tem certeza que deseja remover este item do estoque? Esta ação não pode ser desfeita.</p>
+    <input type="hidden" id="deleteId"/>
+    <div class="modal-actions center" style="margin-top:22px;gap:12px">
+      <button class="btn-cancel" onclick="closeConfirm()">Cancelar</button>
+      <button class="btn-danger" onclick="confirmDelete()">🗑️ Excluir</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── MODAL: AJUSTAR QUANTIDADE ── -->
+<div class="overlay" id="qtyOverlay">
+  <div class="modal qty-modal">
+    <div class="modal-header">
+      <h3 id="qtyTitle">Ajustar Quantidade</h3>
+      <button class="btn-close" onclick="closeQty()">✕</button>
+    </div>
+    <p style="color:var(--muted);font-size:13px;font-weight:700">Informe a nova quantidade em estoque:</p>
+    <div class="qty-controls">
+      <button class="qty-btn" onclick="adjustQty(-1)">−</button>
+      <input type="number" id="qtyInput" min="0" step="0.01" value="0"/>
+      <button class="qty-btn" onclick="adjustQty(1)">+</button>
+    </div>
+    <input type="hidden" id="qtyItemId"/>
+    <input type="hidden" id="qtyUnit"/>
+    <p id="qtyUnit-label" style="color:var(--muted);font-size:12px;font-weight:700;margin-bottom:4px"></p>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeQty()">Cancelar</button>
+      <button class="btn-save" onclick="saveQty()">✅ Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+let selectedEmoji = '🍫';
+let currentItems = [];
+
+function selectEmoji(el){
+  document.querySelectorAll('.emoji-opt').forEach(e=>e.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedEmoji = el.dataset.emoji;
+}
+
+function statusLabel(s){
+  const map={em_estoque:{text:'Em estoque',icon:'✅'},estoque_baixo:{text:'Estoque baixo',icon:'⚠️'},sem_estoque:{text:'Sem estoque',icon:'❌'}};
+  return map[s]||map['em_estoque'];
+}
+
+function formatQty(q,u){
+  const n=parseFloat(q);
+  return Number.isInteger(n)?n.toString():n.toFixed(2).replace('.',',');
+}
+
+function renderTable(items){
+  const body=document.getElementById('tableBody');
+  if(!items.length){body.innerHTML='<tr><td colspan="6" class="empty"><span>🔍</span>Nenhum item encontrado</td></tr>';return;}
+  body.innerHTML=items.map(it=>{
+    const sl=statusLabel(it.status);
+    const isEmb=it.categoria==='Embalagem';
+    return `<tr>
+      <td><div class="item-cell">
+        <div class="item-emoji ${isEmb?'emb':''}">${it.emoji}</div>
+        <span class="item-name">${it.nome}</span>
+      </div></td>
+      <td><span class="badge ${it.categoria.toLowerCase()}">${it.categoria}</span></td>
+      <td>${it.unidade}</td>
+      <td><span class="qty">${formatQty(it.quantidade)}</span></td>
+      <td><span class="status-pill ${it.status}"><span class="status-icon">${sl.icon}</span>${sl.text}</span></td>
+      <td>
+        <div class="actions">
+          <button class="btn-icon btn-add-qty" title="Ajustar quantidade" onclick="openQty(${it.id},'${it.nome}',${it.quantidade},'${it.unidade}')">📊</button>
+          <button class="btn-icon btn-edit" title="Editar" onclick="editItem(${it.id})">✏️</button>
+          <button class="btn-icon btn-del" title="Excluir" onclick="openConfirm(${it.id})">🗑️</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function updateStats(stats){
+  document.getElementById('st-total').textContent=stats.total;
+  document.getElementById('st-ok').textContent=stats.em_estoque;
+  document.getElementById('st-low').textContent=stats.estoque_baixo;
+  document.getElementById('st-out').textContent=stats.sem_estoque;
+}
+
+async function loadItems(){
+  const q=document.getElementById('searchInput').value;
+  const cat=document.getElementById('filterCat').value;
+  const params=new URLSearchParams();
+  if(q)params.append('q',q);
+  if(cat)params.append('categoria',cat);
+  const res=await fetch('/api/items?'+params);
+  const data=await res.json();
+  currentItems=data.items;
+  renderTable(data.items);
+  updateStats(data.stats);
+  document.getElementById('lastUpdate').textContent=data.updated_at;
+}
+
+// ── MODAL ITEM ──
+function openModal(item=null){
+  document.getElementById('editId').value='';
+  document.getElementById('fNome').value='';
+  document.getElementById('fCategoria').value='Ingrediente';
+  document.getElementById('fUnidade').value='kg';
+  document.getElementById('fQtd').value='';
+  document.getElementById('fMin').value='10';
+  selectedEmoji='🍫';
+  document.querySelectorAll('.emoji-opt').forEach(e=>{e.classList.remove('selected');if(e.dataset.emoji===selectedEmoji)e.classList.add('selected')});
+  document.getElementById('modalTitle').textContent=item?'Editar Item':'Novo Item';
+  if(item){
+    document.getElementById('editId').value=item.id;
+    document.getElementById('fNome').value=item.nome;
+    document.getElementById('fCategoria').value=item.categoria;
+    document.getElementById('fUnidade').value=item.unidade;
+    document.getElementById('fQtd').value=item.quantidade;
+    document.getElementById('fMin').value=item.minimo;
+    selectedEmoji=item.emoji;
+    document.querySelectorAll('.emoji-opt').forEach(e=>{e.classList.remove('selected');if(e.dataset.emoji===item.emoji)e.classList.add('selected')});
+  }
+  document.getElementById('itemOverlay').classList.add('open');
+}
+function closeModal(){document.getElementById('itemOverlay').classList.remove('open')}
+
+function editItem(id){
+  const it=currentItems.find(i=>i.id===id);
+  if(it)openModal(it);
+}
+
+async function saveItem(){
+  const id=document.getElementById('editId').value;
+  const nome=document.getElementById('fNome').value.trim();
+  if(!nome){showToast('Informe o nome do item','error');return;}
+  const body={
+    nome,
+    categoria:document.getElementById('fCategoria').value,
+    unidade:document.getElementById('fUnidade').value,
+    quantidade:document.getElementById('fQtd').value||0,
+    minimo:document.getElementById('fMin').value||10,
+    emoji:selectedEmoji,
+  };
+  const url=id?`/api/items/${id}`:'/api/items';
+  const method=id?'PUT':'POST';
+  const res=await fetch(url,{method,headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  const data=await res.json();
+  updateStats(data.stats);
+  closeModal();
+  loadItems();
+  showToast(id?'Item atualizado com sucesso!':'Item cadastrado com sucesso!','success');
+}
+
+// ── MODAL CONFIRM ──
+function openConfirm(id){
+  document.getElementById('deleteId').value=id;
+  document.getElementById('confirmOverlay').classList.add('open');
+}
+function closeConfirm(){document.getElementById('confirmOverlay').classList.remove('open')}
+async function confirmDelete(){
+  const id=document.getElementById('deleteId').value;
+  const res=await fetch(`/api/items/${id}`,{method:'DELETE'});
+  const data=await res.json();
+  updateStats(data.stats);
+  closeConfirm();
+  loadItems();
+  showToast('Item removido do estoque','success');
+}
+
+// ── MODAL QTY ──
+function openQty(id,nome,qty,unit){
+  document.getElementById('qtyItemId').value=id;
+  document.getElementById('qtyTitle').textContent=`Ajustar: ${nome}`;
+  document.getElementById('qtyInput').value=qty;
+  document.getElementById('qtyUnit').value=unit;
+  document.getElementById('qtyUnit-label').textContent=`Unidade: ${unit}`;
+  document.getElementById('qtyOverlay').classList.add('open');
+}
+function closeQty(){document.getElementById('qtyOverlay').classList.remove('open')}
+function adjustQty(delta){
+  const inp=document.getElementById('qtyInput');
+  inp.value=Math.max(0,parseFloat(inp.value||0)+delta);
+}
+async function saveQty(){
+  const id=document.getElementById('qtyItemId').value;
+  const it=currentItems.find(i=>i.id==id);
+  if(!it)return;
+  const qty=parseFloat(document.getElementById('qtyInput').value)||0;
+  const body={...it,quantidade:qty};
+  const res=await fetch(`/api/items/${id}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  const data=await res.json();
+  updateStats(data.stats);
+  closeQty();
+  loadItems();
+  showToast('Quantidade atualizada!','success');
+}
+
+// ── TOAST ──
+let toastTimer;
+function showToast(msg,type='success'){
+  const t=document.getElementById('toast');
+  t.className=`toast ${type}`;
+  t.innerHTML=(type==='success'?'✅ ':'❌ ')+msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+// ── CLOSE ON OVERLAY CLICK ──
+document.getElementById('itemOverlay').addEventListener('click',function(e){if(e.target===this)closeModal()});
+document.getElementById('confirmOverlay').addEventListener('click',function(e){if(e.target===this)closeConfirm()});
+document.getElementById('qtyOverlay').addEventListener('click',function(e){if(e.target===this)closeQty()});
+
+// ── INIT ──
+loadItems();
+</script>
+</body>
+</html>
