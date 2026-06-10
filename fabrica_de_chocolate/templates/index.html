@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Omunculos - Login e Cadastro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-color: #63351C;
+            --card-bg: #F4EBE1;
+            --text-dark: #3E1F0B;
+            --text-light: #5A3A29;
+            --btn-dark: #3E1F0B;
+            --btn-light: #B47854;
+            --border-color: #D4C3B3;
+            --error-color: #d32f2f;
+            --success-color: #2e7d32;
+            --info-color: #1565c0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
+
+        body {
+            background: radial-gradient(circle, #784325 0%, #4a2613 100%);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            min-height: 100vh; padding: 20px; color: var(--text-dark);
+        }
+
+        .flash-messages { width: 700px; margin-bottom: 20px; }
+        .flash {
+            padding: 15px; border-radius: 5px; font-size: 13px; font-weight: 600;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2); margin-bottom: 10px;
+        }
+        .flash.error   { background-color: #ffdde0; color: var(--error-color);   border-left: 5px solid var(--error-color); }
+        .flash.success { background-color: #e8f5e9; color: var(--success-color); border-left: 5px solid var(--success-color); }
+        .flash.info    { background-color: #e3f2fd; color: var(--info-color);    border-left: 5px solid var(--info-color); }
+
+        .login-card {
+            background-color: var(--card-bg); border-radius: 15px; padding: 40px; width: 700px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); display: flex; flex-direction: column; gap: 30px;
+        }
+ 
+        .header { text-align: center; display: flex; justify-content: center; align-items: center; gap: 10px; }
+        .header .fa-seedling { font-size: 32px; color: var(--text-dark); transform: rotate(-15deg); }
+        .header-text h1 { font-size: 24px; font-weight: 700; letter-spacing: 1px; color: var(--text-dark); }
+        .header-text p  { font-size: 11px; font-weight: 600; color: var(--text-light); letter-spacing: 0.5px; }
+ 
+        .body-content { display: flex; gap: 30px; }
+        .forms-section { flex: 1; }
+        .forms-section h2 { font-size: 20px; margin-bottom: 20px; }
+ 
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 5px; }
+        .input-wrapper { position: relative; display: flex; align-items: center; }
+        .input-wrapper i.icon-left { position: absolute; left: 12px; color: var(--text-dark); font-size: 14px; pointer-events: none; }
+        .input-wrapper input {
+            width: 100%; padding: 10px 36px 10px 35px; border: 2px solid var(--text-dark);
+            border-radius: 8px; background-color: transparent; font-size: 13px; color: var(--text-dark); outline: none;
+            transition: border-color 0.2s;
+        }
+        .input-wrapper input:focus { border-color: var(--btn-light); }
+ 
+        .toggle-senha {
+            position: absolute; right: 10px; background: none; border: none;
+            cursor: pointer; color: var(--text-light); font-size: 14px; padding: 4px;
+        }
+        .toggle-senha:hover { color: var(--text-dark); }
+ 
+        .forgot-password {
+            display: block; text-align: right; font-size: 12px; color: var(--text-dark);
+            text-decoration: underline; margin-top: 6px; margin-bottom: 20px;
+            cursor: pointer; background: none; border: none; font-family: inherit; font-weight: 600;
+            width: 100%;
+        }
+        .forgot-password:hover { color: var(--btn-light); }
+ 
+        .senha-dica { font-size: 11px; color: var(--text-light); margin-top: 5px; line-height: 1.4; }
+ 
+        .btn-primary {
+            width: 100%; background-color: var(--btn-dark); color: white; border: none; padding: 12px;
+            border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; transition: background 0.3s;
+        }
+        .btn-primary:hover { background-color: #2b1406; }
+ 
+        .divider { width: 1px; background-color: var(--border-color); }
+        .info-section { flex: 1; display: flex; flex-direction: column; justify-content: center; padding-left: 10px; }
+        .info-section h2 { font-size: 18px; margin-bottom: 10px; }
+        .info-section p  { font-size: 13px; line-height: 1.5; color: var(--text-light); margin-bottom: 20px; }
+ 
+        .btn-secondary {
+            background-color: var(--btn-light); color: var(--text-dark); border: none; padding: 12px 20px;
+            border-radius: 20px; font-size: 13px; font-weight: 700; cursor: pointer;
+            width: max-content; transition: background 0.3s;
+        }
+        .btn-secondary:hover { background-color: #a36541; }
+ 
+        .modal-overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.6); z-index: 1000;
+            justify-content: center; align-items: center;
+        }
+        .modal-overlay.ativo { display: flex; }
+ 
+        .modal-box {
+            background: var(--card-bg); border-radius: 15px; padding: 35px;
+            width: 420px; box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+            position: relative; animation: slideIn 0.25s ease;
+        }
+        @keyframes slideIn {
+            from { transform: translateY(-30px); opacity: 0; }
+            to   { transform: translateY(0);     opacity: 1; }
+        }
+ 
+        .modal-box h3 { font-size: 18px; margin-bottom: 8px; color: var(--text-dark); }
+        .modal-box p  { font-size: 13px; color: var(--text-light); margin-bottom: 20px; line-height: 1.5; }
+ 
+        .modal-fechar {
+            position: absolute; top: 15px; right: 18px;
+            background: none; border: none; font-size: 20px;
+            cursor: pointer; color: var(--text-light); line-height: 1;
+        }
+        .modal-fechar:hover { color: var(--text-dark); }
+ 
+        .modal-box .btn-primary { margin-top: 5px; }
+ 
+        .erro-campo {
+            font-size: 11px; color: var(--error-color); margin-top: 4px; font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+ 
+    <!-- FLASH MESSAGES (Flask) -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+ 
+    <div class="login-card">
+        <div class="header">
+            <i class="fa-solid fa-seedling"></i>
+            <div class="header-text">
+                <h1>OMUNCULOS</h1>
+                <p>FÁBRICA DE CHOCOLATE</p>
+            </div>
+        </div>
+ 
+        <div class="body-content">
+            <div class="forms-section">
+ 
+                <!-- FORMULÁRIO DE LOGIN -->
+                <div id="div-login">
+                    <h2>Acesso do Usuário</h2>
+                    <form id="form-login" action="/" method="POST" onsubmit="return validarLogin(event)">
+                        <input type="hidden" name="acao" value="login">
+ 
+                        <div class="form-group">
+                            <label for="email_login">E-mail do Usuário:</label>
+                            <div class="input-wrapper">
+                                <i class="fa-regular fa-envelope icon-left"></i>
+                                <input type="email" id="email_login" name="email_login"
+                                       placeholder="seu.email@exemplo.com"
+                                       value="{{ email_preenchido or '' }}" required>
+                            </div>
+                            <div class="erro-campo" id="erro-email-login"></div>
+                        </div>
+ 
+                        <div class="form-group">
+                            <label for="senha_login">Senha:</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-lock icon-left"></i>
+                                <input type="password" id="senha_login" name="senha_login"
+                                       placeholder="Sua senha forte" required>
+                                <button type="button" class="toggle-senha" onclick="alternarSenha('senha_login', this)" title="Mostrar/ocultar senha">
+                                    <i class="fa-regular fa-eye"></i>
+                                </button>
+                            </div>
+                            <div class="erro-campo" id="erro-senha-login"></div>
+                            <button type="button" class="forgot-password" onclick="abrirModal()">
+                                Esqueci minha senha
+                            </button>
+                        </div>
+                        
+                        <button type="submit" class="btn-primary">ACESSAR CONTA</button>
+                    </form>
+                </div>
+ 
+                <!-- FORMULÁRIO DE CADASTRO -->
+                <div id="div-cadastro" style="display: none;">
+                    <h2>Criar Nova Conta</h2>
+                    <form id="form-cadastro" action="/" method="POST" onsubmit="return validarCadastro(event)">
+                        <input type="hidden" name="acao" value="cadastro">
+ 
+                        <div class="form-group">
+                            <label for="nome_cadastro">Seu Nome:</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-user icon-left"></i>
+                                <input type="text" id="nome_cadastro" name="nome_cadastro"
+                                       placeholder="João Silva" required>
+                            </div>
+                            <div class="erro-campo" id="erro-nome"></div>
+                        </div>
+ 
+                        <div class="form-group">
+                            <label for="email_cadastro">E-mail Válido:</label>
+                            <div class="input-wrapper">
+                                <i class="fa-regular fa-envelope icon-left"></i>
+                                <input type="email" id="email_cadastro" name="email_cadastro"
+                                       placeholder="seu.email@exemplo.com" required>
+                            </div>
+                            <div class="erro-campo" id="erro-email-cad"></div>
+                        </div>
+ 
+                        <div class="form-group">
+                            <label for="senha_cadastro">Senha Forte:</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-lock icon-left"></i>
+                                <input type="password" id="senha_cadastro" name="senha_cadastro"
+                                       placeholder="Ex: Chocolate#2024"
+                                       minlength="8" required
+                                       oninput="verificarSenha(this.value)">
+                                <button type="button" class="toggle-senha" onclick="alternarSenha('senha_cadastro', this)" title="Mostrar/ocultar senha">
+                                    <i class="fa-regular fa-eye"></i>
+                                </button>
+                            </div>
+                            <p class="senha-dica">Mín. 8 caracteres, 1 maiúscula, 1 número, 1 símbolo.</p>
+                            <div id="senha-forca" style="margin-top:5px; font-size:11px; font-weight:600;"></div>
+                            <div class="erro-campo" id="erro-senha-cad"></div>
+                        </div>
+ 
+                        <div class="form-group">
+                            <label for="confirmar_senha_cadastro">Confirmar Senha:</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-lock icon-left"></i>
+                                <input type="password" id="confirmar_senha_cadastro" name="confirmar_senha_cadastro"
+                                       placeholder="Repita a senha" minlength="8" required>
+                                <button type="button" class="toggle-senha" onclick="alternarSenha('confirmar_senha_cadastro', this)" title="Mostrar/ocultar senha">
+                                    <i class="fa-regular fa-eye"></i>
+                                </button>
+                            </div>
+                            <div class="erro-campo" id="erro-confirma"></div>
+                        </div>
+ 
+                        <button type="submit" class="btn-primary">CADASTRAR E CONTINUAR</button>
+                    </form>
+                </div>
+ 
+            </div>
+ 
+            <div class="divider"></div>
+ 
+            <div class="info-section">
+                <div id="info-login">
+                    <h2>Novo por aqui?</h2>
+                    <p>Não tem uma conta ainda? Cadastre-se para acompanhar pedidos, ter ofertas exclusivas e muito mais!</p>
+                    <button type="button" class="btn-secondary" onclick="alternarAbas('cadastro')">CRIAR NOVA CONTA</button>
+                </div>
+                <div id="info-cadastro" style="display: none;">
+                    <h2>Já é nosso cliente?</h2>
+                    <p>Se você já possui uma conta, faça o login para continuar comprando seus chocolates favoritos!</p>
+                    <button type="button" class="btn-secondary" onclick="alternarAbas('login')">FAZER LOGIN</button>
+                </div>
+            </div>
+        </div>
+    </div>
+ 
+    <!-- MODAL ESQUECI MINHA SENHA -->
+    <div class="modal-overlay" id="modal-recuperacao">
+        <div class="modal-box">
+            <button class="modal-fechar" onclick="fecharModal()" title="Fechar">&times;</button>
+            <i class="fa-solid fa-key" style="font-size:28px; color:var(--btn-light); margin-bottom:12px; display:block;"></i>
+            <h3>Recuperar Senha</h3>
+            <p>Informe o e-mail cadastrado. Em produção, você receberia um link de redefinição. Nesta demonstração, confirmaremos se o e-mail existe.</p>
+ 
+            <form action="/" method="POST">
+                <input type="hidden" name="acao" value="esqueci_senha">
+                <div class="form-group">
+                    <label for="email_recuperacao">Seu e-mail:</label>
+                    <div class="input-wrapper">
+                        <i class="fa-regular fa-envelope icon-left"></i>
+                        <input type="email" id="email_recuperacao" name="email_recuperacao"
+                               placeholder="seu.email@exemplo.com" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary">ENVIAR INSTRUÇÕES</button>
+            </form>
+        </div>
+    </div>
+ 
+    <script>
+        /* ── ABAS ── */
+        function alternarAbas(modo) {
+            const divLogin     = document.getElementById('div-login');
+            const divCadastro  = document.getElementById('div-cadastro');
+            const infoLogin    = document.getElementById('info-login');
+            const infoCadastro = document.getElementById('info-cadastro');
+ 
+            if (modo === 'cadastro') {
+                divLogin.style.display     = 'none';
+                infoLogin.style.display    = 'none';
+                divCadastro.style.display  = 'block';
+                infoCadastro.style.display = 'block';
+            } else {
+                divCadastro.style.display  = 'none';
+                infoCadastro.style.display = 'none';
+                divLogin.style.display     = 'block';
+                infoLogin.style.display    = 'block';
+            }
+        }
+ 
+        {% if mostrar_aba == 'cadastro' %}
+            alternarAbas('cadastro');
+        {% endif %}
+ 
+        /* ── MODAL ── */
+        function abrirModal() {
+            document.getElementById('modal-recuperacao').classList.add('ativo');
+            setTimeout(() => document.getElementById('email_recuperacao').focus(), 100);
+        }
+        function fecharModal() {
+            document.getElementById('modal-recuperacao').classList.remove('ativo');
+        }
+        document.getElementById('modal-recuperacao')?.addEventListener('click', function(e) {
+            if (e.target === this) fecharModal();
+        });
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') fecharModal();
+        });
+ 
+        {% if abrir_modal_recuperacao %}
+            abrirModal();
+        {% endif %}
+ 
+        /* ── MOSTRAR/OCULTAR SENHA ── */
+        function alternarSenha(inputId, btn) {
+            const input = document.getElementById(inputId);
+            const icon  = btn.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.replace('fa-eye', 'fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.replace('fa-eye-slash', 'fa-eye');
+            }
+        }
+ 
+        /* ── FORÇA DA SENHA ── */
+        function verificarSenha(senha) {
+            const el = document.getElementById('senha-forca');
+            if (!el) return;
+            let pontos = 0;
+            if (senha.length >= 8)              pontos++;
+            if (/[A-Z]/.test(senha))            pontos++;
+            if (/\d/.test(senha))               pontos++;
+            if (/[!@#$%^&*()\-_+={}[\]:;"'<>,.?/\\|`~]/.test(senha)) pontos++;
+ 
+            const niveis = ['', '⬛ Muito fraca', '🟥 Fraca', '🟧 Média', '🟩 Forte'];
+            const cores  = ['', '#d32f2f', '#e65100', '#f9a825', '#2e7d32'];
+            el.textContent = niveis[pontos] || '';
+            el.style.color = cores[pontos] || '';
+        }
+ 
+        /* ── VALIDAÇÃO E REDIRECIONAMENTO — LOGIN ── */
+        function validarLogin(event) {
+            event.preventDefault();
+ 
+            const email = document.getElementById('email_login').value.trim();
+            const senha = document.getElementById('senha_login').value;
+            let valido  = true;
+ 
+            document.getElementById('erro-email-login').textContent = '';
+            document.getElementById('erro-senha-login').textContent = '';
+ 
+            if (!email) {
+                document.getElementById('erro-email-login').textContent = 'Informe seu e-mail.';
+                valido = false;
+            }
+            if (!senha) {
+                document.getElementById('erro-senha-login').textContent = 'Informe sua senha.';
+                valido = false;
+            }
+ 
+            if (valido) {
+                /*
+                 * Se você usa Flask para validar no banco de dados,
+                 * remova este redirecionamento e deixe o form submeter normalmente
+                 * (basta tirar o onsubmit="return validarLogin(event)" do form).
+                 * O redirect deve vir do Python: return redirect(url_for('estoque'))
+                 *
+                 * Se quiser redirecionar direto pelo front (sem backend):
+                 */
+                window.location.href = 'estoque.html';
+            }
+ 
+            return false;
+        }
+ 
+        /* ── VALIDAÇÃO — CADASTRO ── */
+        function validarCadastro(event) {
+            event.preventDefault();
+ 
+            const nome     = document.getElementById('nome_cadastro').value.trim();
+            const email    = document.getElementById('email_cadastro').value.trim();
+            const senha    = document.getElementById('senha_cadastro').value;
+            const confirma = document.getElementById('confirmar_senha_cadastro').value;
+            let valido     = true;
+ 
+            document.getElementById('erro-nome').textContent    = '';
+            document.getElementById('erro-email-cad').textContent = '';
+            document.getElementById('erro-senha-cad').textContent = '';
+            document.getElementById('erro-confirma').textContent  = '';
+ 
+            if (!nome) {
+                document.getElementById('erro-nome').textContent = 'Informe seu nome.';
+                valido = false;
+            }
+            if (!email) {
+                document.getElementById('erro-email-cad').textContent = 'Informe um e-mail válido.';
+                valido = false;
+            }
+ 
+            let pontos = 0;
+            if (senha.length >= 8)                                              pontos++;
+            if (/[A-Z]/.test(senha))                                            pontos++;
+            if (/\d/.test(senha))                                               pontos++;
+            if (/[!@#$%^&*()\-_+={}[\]:;"'<>,.?/\\|`~]/.test(senha))          pontos++;
+ 
+            if (pontos < 4) {
+                document.getElementById('erro-senha-cad').textContent = 'A senha não atende aos requisitos mínimos.';
+                valido = false;
+            }
+            if (senha !== confirma) {
+                document.getElementById('erro-confirma').textContent = 'As senhas não coincidem.';
+                valido = false;
+            }
+ 
+            if (valido) {
+                window.location.href = "estoque.html";
+            }
+ 
+            return false;
+        }
+    </script>
+</body>
+</html>

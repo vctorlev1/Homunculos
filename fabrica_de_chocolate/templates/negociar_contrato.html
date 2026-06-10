@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Negociar Contrato – Cacaonnattenie</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --cacao-dark:  #2b1610; --cacao-brown: #5c2e0e; --cacao-mid: #8b4513;
+      --cacao-warm:  #c47b35; --cacao-gold:  #d4a055; --cacao-cream: #f5ece2;
+      --cacao-light: #faf5ef; --green: #3a7d44; --green-light: #d4edda;
+      --red: #c0392b; --red-light: #fde8e6; --yellow: #e67e22; --yellow-light: #fef3e2;
+      --blue: #1a6fa8; --blue-light: #dbeeff;
+      --text-dark: #1e0e06; --text-mid: #5a3520; --text-light: #9b7055;
+      --border: #e0cdb8; --shadow: 0 2px 16px rgba(43,22,16,.10); --radius: 12px;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'DM Sans',sans-serif;background:var(--cacao-light);color:var(--text-dark);min-height:100vh;display:flex;flex-direction:column}
+
+    /* ── NAV ── */
+    nav{background:var(--cacao-dark);display:flex;align-items:center;justify-content:space-between;padding:0 36px;height:62px;box-shadow:0 2px 12px rgba(0,0,0,.35);flex-shrink:0}
+    .nav-logo{font-family:'Playfair Display',serif;color:var(--cacao-gold);font-size:1.35rem;letter-spacing:.04em;display:flex;align-items:center;gap:8px}
+    .nav-links{display:flex;gap:0;list-style:none}
+    .nav-links a{color:var(--cacao-cream);text-decoration:none;font-size:.72rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;opacity:.75;transition:opacity .2s,color .2s;padding:0 18px;text-align:center;line-height:1.3}
+    .nav-links a:hover{opacity:1;color:var(--cacao-gold)}
+    .nav-links a.active{opacity:1;color:var(--cacao-gold)}
+    .nav-icons{display:flex;gap:16px;align-items:center}
+    .nav-icons svg{width:20px;height:20px;fill:var(--cacao-cream);opacity:.8;cursor:pointer;transition:opacity .2s}
+    .nav-icons svg:hover{opacity:1;fill:var(--cacao-gold)}
+
+    /* ── HERO ── */
+    .hero-banner{background:linear-gradient(135deg,var(--cacao-dark) 0%,var(--cacao-brown) 60%,var(--cacao-mid) 100%);padding:32px 40px 28px;position:relative;overflow:hidden;flex-shrink:0}
+    .hero-banner::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='30' cy='30' r='20' fill='none' stroke='rgba(255,255,255,.04)' stroke-width='1'/%3E%3C/svg%3E") repeat;pointer-events:none}
+    .hero-title{font-family:'Playfair Display',serif;color:var(--cacao-cream);font-size:1.9rem;letter-spacing:.01em;margin-bottom:20px;position:relative}
+    .hero-title::after{content:'';display:block;width:56px;height:3px;background:var(--cacao-gold);border-radius:2px;margin-top:8px}
+    .stats-row{display:flex;gap:16px;flex-wrap:wrap}
+    .stat-card{background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.15);border-radius:var(--radius);padding:14px 24px;min-width:170px;backdrop-filter:blur(6px);transition:background .2s}
+    .stat-card:hover{background:rgba(255,255,255,.16)}
+    .stat-label{font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--cacao-gold);margin-bottom:4px}
+    .stat-value{font-family:'Playfair Display',serif;color:#fff;font-size:1.4rem}
+    .stat-card.destaque{background:rgba(212,160,85,.2);border-color:rgba(212,160,85,.4)}
+    .stat-card.destaque .stat-value{color:var(--cacao-gold)}
+    .stat-card.destaque .stat-label{color:var(--cacao-gold)}
+
+    /* ── MAIN ── */
+    .main-wrap{padding:32px 40px 40px;display:grid;grid-template-columns:1fr 1fr;gap:28px;flex:1}
+
+    /* ── SECTION TITLE ── */
+    .section-title{font-family:'Playfair Display',serif;font-size:1.05rem;color:var(--cacao-brown);letter-spacing:.06em;text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+    .section-title::before{content:'';display:inline-block;width:18px;height:3px;background:var(--cacao-gold);border-radius:2px}
+
+    /* ── CARD ── */
+    .card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--border);overflow:hidden}
+    .card-header{background:var(--cacao-dark);padding:16px 24px}
+    .card-header-title{font-family:'Playfair Display',serif;color:var(--cacao-gold);font-size:.95rem;letter-spacing:.06em;text-transform:uppercase}
+    .card-header-sub{color:rgba(245,236,226,.55);font-size:.75rem;margin-top:3px}
+    .card-body{padding:24px}
+
+    /* ── FORM ── */
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .form-group{display:flex;flex-direction:column;gap:6px}
+    .form-group.full{grid-column:1/-1}
+    .form-group label{font-size:.7rem;font-weight:700;color:var(--text-light);letter-spacing:.1em;text-transform:uppercase}
+    .form-group input,.form-group select{
+      border:1px solid var(--border);border-radius:8px;
+      padding:11px 14px;font-family:'DM Sans',sans-serif;font-size:.9rem;
+      color:var(--text-dark);background:var(--cacao-light);outline:none;
+      transition:border-color .15s,box-shadow .15s,background .15s
+    }
+    .form-group input:focus,.form-group select:focus{
+      border-color:var(--cacao-warm);background:#fff;
+      box-shadow:0 0 0 3px rgba(196,123,53,.15)
+    }
+    .form-group input.error,.form-group select.error{border-color:var(--red);box-shadow:0 0 0 3px rgba(192,57,43,.12)}
+    .form-group input::placeholder{color:var(--text-light);opacity:.7}
+
+    .input-prefix-wrap{position:relative}
+    .input-prefix{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:.85rem;color:var(--text-light);pointer-events:none;font-weight:600}
+    .input-prefix-wrap input{padding-left:34px}
+
+    .btn-atualizar{
+      width:100%;margin-top:8px;
+      background:var(--cacao-gold);color:var(--cacao-dark);
+      border:none;border-radius:8px;
+      padding:13px 22px;font-family:'DM Sans',sans-serif;
+      font-size:.9rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+      cursor:pointer;transition:background .15s,transform .1s,box-shadow .15s;
+      box-shadow:0 3px 12px rgba(212,160,85,.35)
+    }
+    .btn-atualizar:hover{background:var(--cacao-warm);transform:translateY(-2px);box-shadow:0 6px 20px rgba(212,160,85,.4)}
+    .btn-atualizar:active{transform:translateY(0)}
+
+    .btn-novo{
+      display:flex;align-items:center;gap:8px;justify-content:center;
+      width:100%;margin-top:10px;
+      background:transparent;color:var(--cacao-brown);
+      border:1px dashed var(--cacao-warm);border-radius:8px;
+      padding:11px 22px;font-family:'DM Sans',sans-serif;
+      font-size:.82rem;font-weight:600;cursor:pointer;
+      transition:background .15s,border-color .15s
+    }
+    .btn-novo:hover{background:var(--cacao-cream);border-color:var(--cacao-brown)}
+    .btn-novo svg{width:15px;height:15px;fill:var(--cacao-warm)}
+
+    /* ── NEGOCIAÇÃO EM CURSO ── */
+    .contrato-lista{display:flex;flex-direction:column;gap:14px}
+
+    .contrato-item{
+      border:1px solid var(--border);border-radius:var(--radius);
+      overflow:hidden;transition:box-shadow .2s,border-color .2s
+    }
+    .contrato-item:hover{box-shadow:0 4px 20px rgba(43,22,16,.12);border-color:var(--cacao-warm)}
+
+    .contrato-item-header{
+      background:var(--cacao-cream);padding:12px 18px;
+      display:flex;align-items:center;justify-content:space-between;
+      border-bottom:1px solid var(--border)
+    }
+    .contrato-id{font-family:'Playfair Display',serif;font-size:.95rem;color:var(--cacao-brown);font-weight:700}
+    .contrato-actions{display:flex;gap:6px}
+    .icon-btn{width:28px;height:28px;border-radius:7px;border:1px solid var(--border);background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s,border-color .15s,transform .1s}
+    .icon-btn:hover{background:var(--cacao-cream);border-color:var(--cacao-gold);transform:scale(1.08)}
+    .icon-btn svg{width:13px;height:13px;fill:var(--cacao-mid)}
+    .icon-btn.del-btn:hover{background:var(--red-light);border-color:var(--red)}
+    .icon-btn.del-btn:hover svg{fill:var(--red)}
+
+    .contrato-item-body{padding:16px 18px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    .ci-field{display:flex;flex-direction:column;gap:3px}
+    .ci-label{font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-light)}
+    .ci-value{font-size:.9rem;color:var(--text-dark);font-weight:600}
+
+    /* STATUS BADGES */
+    .badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:.72rem;font-weight:700;white-space:nowrap;letter-spacing:.04em}
+    .badge-dot{width:7px;height:7px;border-radius:50%}
+    .badge-analise{background:var(--yellow-light);color:var(--yellow)}
+    .badge-analise .badge-dot{background:var(--yellow)}
+    .badge-aprovado{background:var(--green-light);color:var(--green)}
+    .badge-aprovado .badge-dot{background:var(--green)}
+    .badge-recusado{background:var(--red-light);color:var(--red)}
+    .badge-recusado .badge-dot{background:var(--red)}
+    .badge-assinado{background:#dbeeff;color:var(--blue)}
+    .badge-assinado .badge-dot{background:var(--blue)}
+
+    /* EMPTY */
+    .empty-state{text-align:center;padding:48px 20px}
+    .empty-state .empty-icon{font-size:2.8rem;margin-bottom:12px;opacity:.35}
+    .empty-state p{color:var(--text-light);font-size:.875rem;line-height:1.6}
+
+    /* ── QUICK BAR ── */
+    .quick-bar{background:var(--cacao-dark);padding:0 40px;display:flex;align-items:center;min-height:52px;gap:0;border-top:2px solid var(--cacao-gold);flex-shrink:0}
+    .quick-bar-label{font-family:'Playfair Display',serif;color:var(--cacao-gold);font-size:.88rem;white-space:nowrap;margin-right:24px;letter-spacing:.03em}
+    .quick-actions{display:flex;gap:8px;flex-wrap:wrap}
+    .quick-btn{display:flex;align-items:center;gap:7px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:8px;color:var(--cacao-cream);font-family:'DM Sans',sans-serif;font-size:.75rem;font-weight:500;padding:8px 14px;cursor:pointer;transition:background .15s,border-color .15s;letter-spacing:.03em;text-transform:uppercase}
+    .quick-btn:hover{background:rgba(212,160,85,.2);border-color:var(--cacao-gold);color:var(--cacao-gold)}
+    .quick-btn svg{width:14px;height:14px;fill:currentColor}
+
+    /* ── FOOTER ── */
+    footer{background:var(--cacao-dark);padding:14px 40px;display:flex;justify-content:space-between;align-items:center;font-size:.75rem;color:rgba(245,236,226,.5);border-top:1px solid rgba(255,255,255,.07);flex-shrink:0}
+
+    /* ── MODALS ── */
+    .modal-overlay{position:fixed;inset:0;background:rgba(20,8,4,.65);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;z-index:1000;opacity:0;pointer-events:none;transition:opacity .25s}
+    .modal-overlay.open{opacity:1;pointer-events:all}
+    .modal-box{background:var(--cacao-light);border-radius:16px;width:520px;max-width:95vw;box-shadow:0 24px 60px rgba(0,0,0,.35);transform:translateY(20px);transition:transform .25s;overflow:hidden}
+    .modal-overlay.open .modal-box{transform:translateY(0)}
+    .modal-header{background:var(--cacao-dark);padding:18px 24px;display:flex;align-items:center;justify-content:space-between}
+    .modal-title{font-family:'Playfair Display',serif;color:var(--cacao-gold);font-size:1.05rem}
+    .modal-close{background:none;border:none;color:var(--cacao-cream);font-size:1.1rem;cursor:pointer;opacity:.7;transition:opacity .15s}
+    .modal-close:hover{opacity:1}
+    .modal-body{padding:24px;max-height:65vh;overflow-y:auto}
+    .modal-footer{padding:16px 24px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:10px;background:#fff}
+
+    /* view fields */
+    .view-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .view-field{display:flex;flex-direction:column;gap:4px}
+    .view-field.full{grid-column:1/-1}
+    .view-label{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-light)}
+    .view-value{font-size:.9rem;color:var(--text-dark);font-weight:500;padding:8px 12px;background:#fff;border:1px solid var(--border);border-radius:8px}
+
+    /* confirm */
+    .confirm-icon{text-align:center;font-size:2.8rem;margin-bottom:12px}
+    .confirm-msg{text-align:center;color:var(--text-mid);font-size:.9rem;line-height:1.5}
+    .confirm-msg strong{color:var(--text-dark)}
+
+    .btn-primary{background:var(--cacao-brown);color:var(--cacao-cream);border:none;border-radius:8px;padding:10px 22px;font-family:'DM Sans',sans-serif;font-size:.875rem;font-weight:600;cursor:pointer;transition:background .15s}
+    .btn-primary:hover{background:var(--cacao-mid)}
+    .btn-secondary{background:transparent;color:var(--text-mid);border:1px solid var(--border);border-radius:8px;padding:10px 22px;font-family:'DM Sans',sans-serif;font-size:.875rem;font-weight:500;cursor:pointer;transition:background .15s}
+    .btn-secondary:hover{background:var(--cacao-cream)}
+    .btn-danger{background:var(--red);color:#fff;border:none;border-radius:8px;padding:10px 22px;font-family:'DM Sans',sans-serif;font-size:.875rem;font-weight:600;cursor:pointer;transition:background .15s}
+    .btn-danger:hover{background:#a93226}
+
+    /* TOAST */
+    .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--cacao-dark);color:var(--cacao-cream);padding:12px 24px;border-radius:10px;font-size:.875rem;font-weight:500;border-left:4px solid var(--cacao-gold);box-shadow:0 8px 24px rgba(0,0,0,.3);opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;z-index:2000;white-space:nowrap}
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+    /* ANIM */
+    @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+    .hero-banner{animation:fadeUp .4s ease both .05s}
+    .main-wrap   {animation:fadeUp .4s ease both .12s}
+    .quick-bar   {animation:fadeUp .4s ease both .2s}
+
+    @media(max-width:900px){
+      .main-wrap{grid-template-columns:1fr;padding:18px 16px 28px}
+      nav{padding:0 16px}.nav-links{display:none}
+      .hero-banner{padding:22px 16px 18px}
+      .quick-bar{padding:10px 16px;flex-direction:column;align-items:flex-start;gap:8px;min-height:auto}
+      footer{padding:12px 16px;flex-direction:column;gap:4px}
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo"><span>🍫</span> Cacaonnattenie</div>
+  <ul class="nav-links">
+    <li><a href="estoque.html">menu<br/></a></li>
+    <li><a href="acompanhar entregas.html">acompanhar<br/>entrega</a></li>
+    <li><a href="liberacao insumos.html">liberaçao<br/>insumos</a></li>
+    <li><a href="negociar contrato.html" class="active">negociar<br/>contrato</a></li>
+    <li><a href="receber materiais.html">receber<br/>materiais</a></li>
+  </ul>
+  <div class="nav-icons">
+    <svg viewBox="0 0 24 24"><path d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round"/></svg>
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.58-7 8-7s8 3 8 7"/></svg>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero-banner">
+  <h1 class="hero-title">Negociar Contrato</h1>
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-label">Contratos Ativos</div>
+      <div class="stat-value" id="stat-ativos">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Em Análise</div>
+      <div class="stat-value" id="stat-analise">0</div>
+    </div>
+    <div class="stat-card destaque">
+      <div class="stat-label">Volume Total (Ton/Mês)</div>
+      <div class="stat-value" id="stat-volume">0</div>
+    </div>
+    <div class="stat-card destaque">
+      <div class="stat-label">Valor Médio (R$/KG)</div>
+      <div class="stat-value" id="stat-preco">—</div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main-wrap">
+
+  <!-- ESQUERDA: PROPOSTA -->
+  <div>
+    <div class="section-title">Proposta de Contrato</div>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-header-title" id="form-titulo">Novo Contrato</div>
+        <div class="card-header-sub" id="form-sub">Preencha os campos para registrar uma proposta</div>
+      </div>
+      <div class="card-body">
+        <div class="form-grid">
+          <div class="form-group full">
+            <label>Fornecedor / Parte *</label>
+            <input type="text" id="c-fornecedor" placeholder="Ex: Cacao Brasil Ltda."/>
+          </div>
+          <div class="form-group">
+            <label>Volume (Ton/Mês) *</label>
+            <input type="number" id="c-volume" placeholder="Ex: 10" min="0" step="0.1"/>
+          </div>
+          <div class="form-group">
+            <label>Preço (R$/KG) *</label>
+            <div class="input-prefix-wrap">
+              <span class="input-prefix">R$</span>
+              <input type="number" id="c-preco" placeholder="Ex: 85.00" min="0" step="0.01"/>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Duração *</label>
+            <select id="c-duracao">
+              <option value="6 MESES">6 Meses</option>
+              <option value="1 ANO" selected>1 Ano</option>
+              <option value="2 ANOS">2 Anos</option>
+              <option value="3 ANOS">3 Anos</option>
+              <option value="5 ANOS">5 Anos</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Previsão de Assinatura *</label>
+            <input type="date" id="c-assinatura"/>
+          </div>
+          <div class="form-group full">
+            <label>Status</label>
+            <select id="c-status">
+              <option value="analise">Em Análise</option>
+              <option value="aprovado">Aprovado</option>
+              <option value="assinado">Assinado</option>
+              <option value="recusado">Recusado</option>
+            </select>
+          </div>
+          <div class="form-group full">
+            <label>Observações</label>
+            <input type="text" id="c-obs" placeholder="Cláusulas especiais, condições, etc."/>
+          </div>
+        </div>
+        <button class="btn-atualizar" id="btn-salvar" onclick="salvarContrato()">
+          Registrar Contrato
+        </button>
+        <button class="btn-novo" id="btn-cancelar-edit" style="display:none" onclick="cancelarEdicao()">
+          Cancelar Edição
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DIREITA: NEGOCIAÇÕES EM CURSO -->
+  <div>
+    <div class="section-title">Negociação em Curso</div>
+    <div id="lista-contratos">
+      <!-- renderizado por JS -->
+    </div>
+  </div>
+
+</div>
+
+<!-- QUICK BAR -->
+<div class="quick-bar">
+  <span class="quick-bar-label">Ações Rápidas</span>
+  <div class="quick-actions">
+    <button class="quick-btn" onclick="filtrarStatus('')">
+      <svg viewBox="0 0 24 24"><path d="M3 4h18M7 8h10M11 12h2"/></svg>
+      Todos os Contratos
+    </button>
+    <button class="quick-btn" onclick="filtrarStatus('analise')">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      Em Análise
+    </button>
+    <button class="quick-btn" onclick="filtrarStatus('aprovado')">
+      <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+      Aprovados
+    </button>
+    <button class="quick-btn" onclick="gerarPDF()">
+      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>
+      Exportar Contratos PDF
+    </button>
+  </div>
+</div>
+
+<footer>
+  <span>Contact info@cacaonnattenie.com.br</span>
+  <span>(11) 695 722 9000</span>
+</footer>
+
+<!-- MODAL: VISUALIZAR -->
+<div class="modal-overlay" id="modal-view" onclick="closeOnOverlay(event,'modal-view')">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="modal-title">Detalhes do Contrato</span>
+      <button class="modal-close" onclick="closeModal('modal-view')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="view-grid" id="view-content"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeModal('modal-view')">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: CONFIRMAR EXCLUSÃO -->
+<div class="modal-overlay" id="modal-confirm" onclick="closeOnOverlay(event,'modal-confirm')">
+  <div class="modal-box" style="width:400px">
+    <div class="modal-header">
+      <span class="modal-title">Confirmar Exclusão</span>
+      <button class="modal-close" onclick="closeModal('modal-confirm')">✕</button>
+    </div>
+    <div class="modal-body" style="padding:28px 24px">
+      <div class="confirm-icon">🗑️</div>
+      <div class="confirm-msg" id="confirm-msg"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeModal('modal-confirm')">Cancelar</button>
+      <button class="btn-danger" id="btn-confirm-del">Excluir</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ═══ STATE ═══ */
+const STORAGE_KEY = 'cacao_contratos';
+let contratos = [];
+let editingId = null;
+let filtroAtivo = '';
+
+function loadData() {
+  try { contratos = JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
+  catch { contratos = []; }
+}
+function saveData() { localStorage.setItem(STORAGE_KEY, JSON.stringify(contratos)); }
+function nextId() {
+  if (!contratos.length) return 'CTR10001';
+  const nums = contratos.map(c => parseInt(c.id.replace('CTR','')) || 0);
+  return 'CTR' + (Math.max(...nums) + 1);
+}
+
+/* ═══ STATUS MAP ═══ */
+const statusMap = {
+  analise:  { cls:'badge-analise',  label:'Em Análise' },
+  aprovado: { cls:'badge-aprovado', label:'Aprovado'   },
+  assinado: { cls:'badge-assinado', label:'Assinado'   },
+  recusado: { cls:'badge-recusado', label:'Recusado'   },
+};
+
+/* ═══ ICONS ═══ */
+const eyeIcon  = `<svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+const editIcon = `<svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`;
+const delIcon  = `<svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>`;
+
+/* ═══ RENDER ═══ */
+function renderLista() {
+  const lista = document.getElementById('lista-contratos');
+  const filtrados = filtroAtivo ? contratos.filter(c => c.status === filtroAtivo) : contratos;
+
+  if (!filtrados.length) {
+    lista.innerHTML = `<div class="card"><div class="empty-state">
+      <div class="empty-icon">📋</div>
+      <p>${contratos.length === 0
+        ? 'Nenhum contrato registrado ainda.<br/>Preencha o formulário ao lado para começar.'
+        : 'Nenhum contrato com este filtro.'}
+      </p></div></div>`;
+    updateStats(); return;
+  }
+
+  lista.innerHTML = filtrados.map(c => {
+    const s = statusMap[c.status] || statusMap.analise;
+    return `<div class="contrato-item">
+      <div class="contrato-item-header">
+        <span class="contrato-id">${esc(c.id)}</span>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span class="badge ${s.cls}"><span class="badge-dot"></span>${s.label}</span>
+          <div class="contrato-actions">
+            <button class="icon-btn" title="Visualizar" onclick="visualizar('${c.id}')">${eyeIcon}</button>
+            <button class="icon-btn" title="Editar"     onclick="editar('${c.id}')">${editIcon}</button>
+            <button class="icon-btn del-btn" title="Excluir" onclick="confirmarExcluir('${c.id}')">${delIcon}</button>
+          </div>
+        </div>
+      </div>
+      <div class="contrato-item-body">
+        <div class="ci-field">
+          <div class="ci-label">Fornecedor</div>
+          <div class="ci-value">${esc(c.fornecedor)}</div>
+        </div>
+        <div class="ci-field">
+          <div class="ci-label">Valores Atuais</div>
+          <div class="ci-value">${esc(c.volume)} TON/MÊS | R$ ${esc(c.preco)}</div>
+        </div>
+        <div class="ci-field">
+          <div class="ci-label">Duração do Acordo</div>
+          <div class="ci-value">${esc(c.duracao)}</div>
+        </div>
+        <div class="ci-field">
+          <div class="ci-label">Previsão de Assinatura</div>
+          <div class="ci-value">${esc(c.assinatura)}</div>
+        </div>
+        ${c.obs ? `<div class="ci-field" style="grid-column:1/-1"><div class="ci-label">Observações</div><div class="ci-value" style="font-weight:400;font-size:.82rem;color:var(--text-mid)">${esc(c.obs)}</div></div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+  updateStats();
+}
+
+function updateStats() {
+  document.getElementById('stat-ativos').textContent  = contratos.filter(c => c.status === 'assinado' || c.status === 'aprovado').length;
+  document.getElementById('stat-analise').textContent = contratos.filter(c => c.status === 'analise').length;
+  const vols = contratos.map(c => parseFloat(c.volume) || 0);
+  document.getElementById('stat-volume').textContent  = vols.reduce((a,b) => a+b, 0).toFixed(1);
+  const precos = contratos.map(c => parseFloat(c.preco) || 0).filter(v => v > 0);
+  document.getElementById('stat-preco').textContent   = precos.length
+    ? 'R$ ' + (precos.reduce((a,b) => a+b,0) / precos.length).toFixed(2)
+    : '—';
+}
+
+/* ═══ SALVAR ═══ */
+function salvarContrato() {
+  const fornecedor = document.getElementById('c-fornecedor').value.trim();
+  const volume     = document.getElementById('c-volume').value.trim();
+  const preco      = document.getElementById('c-preco').value.trim();
+  const duracao    = document.getElementById('c-duracao').value;
+  const assinaturaISO = document.getElementById('c-assinatura').value;
+  const status     = document.getElementById('c-status').value;
+  const obs        = document.getElementById('c-obs').value.trim();
+
+  let ok = true;
+  [['c-fornecedor', fornecedor],['c-volume', volume],['c-preco', preco]].forEach(([id, val]) => {
+    const el = document.getElementById(id);
+    if (!val) { el.classList.add('error'); ok = false; } else el.classList.remove('error');
+  });
+  if (!ok) { showToast('⚠️  Preencha os campos obrigatórios.'); return; }
+
+  const assinatura = assinaturaISO
+    ? new Date(assinaturaISO + 'T12:00:00').toLocaleDateString('pt-BR')
+    : '—';
+  const precoFmt = parseFloat(preco).toFixed(2);
+
+  if (editingId) {
+    const idx = contratos.findIndex(c => c.id === editingId);
+    contratos[idx] = { ...contratos[idx], fornecedor, volume, preco: precoFmt, duracao, assinatura, assinaturaISO, status, obs };
+    showToast(`✏️  Contrato ${editingId} atualizado.`);
+    cancelarEdicao();
+  } else {
+    const id = nextId();
+    contratos.push({ id, fornecedor, volume, preco: precoFmt, duracao, assinatura, assinaturaISO, status, obs });
+    showToast(`✅  Contrato ${id} registrado com sucesso!`);
+    limparForm();
+  }
+
+  saveData(); renderLista();
+}
+
+function editar(id) {
+  const c = contratos.find(x => x.id === id);
+  if (!c) return;
+  editingId = id;
+  document.getElementById('c-fornecedor').value = c.fornecedor;
+  document.getElementById('c-volume').value     = c.volume;
+  document.getElementById('c-preco').value      = c.preco;
+  document.getElementById('c-duracao').value    = c.duracao;
+  document.getElementById('c-assinatura').value = c.assinaturaISO || '';
+  document.getElementById('c-status').value     = c.status;
+  document.getElementById('c-obs').value        = c.obs || '';
+  document.getElementById('form-titulo').textContent = 'Editando ' + id;
+  document.getElementById('form-sub').textContent    = 'Altere os campos e salve.';
+  document.getElementById('btn-salvar').textContent  = 'Salvar Alterações';
+  document.getElementById('btn-cancelar-edit').style.display = 'flex';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function cancelarEdicao() {
+  editingId = null;
+  limparForm();
+  document.getElementById('form-titulo').textContent = 'Novo Contrato';
+  document.getElementById('form-sub').textContent    = 'Preencha os campos para registrar uma proposta';
+  document.getElementById('btn-salvar').textContent  = 'Registrar Contrato';
+  document.getElementById('btn-cancelar-edit').style.display = 'none';
+}
+
+function limparForm() {
+  ['c-fornecedor','c-volume','c-preco','c-obs'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('c-duracao').value = '1 ANO';
+  document.getElementById('c-status').value  = 'analise';
+  document.getElementById('c-assinatura').value = '';
+  ['c-fornecedor','c-volume','c-preco'].forEach(id => document.getElementById(id).classList.remove('error'));
+}
+
+/* ═══ VISUALIZAR ═══ */
+function visualizar(id) {
+  const c = contratos.find(x => x.id === id);
+  if (!c) return;
+  const s = statusMap[c.status] || statusMap.analise;
+  document.getElementById('view-content').innerHTML = `
+    <div class="view-field"><div class="view-label">ID do Contrato</div><div class="view-value">${esc(c.id)}</div></div>
+    <div class="view-field"><div class="view-label">Status</div><div class="view-value"><span class="badge ${s.cls}"><span class="badge-dot"></span>${s.label}</span></div></div>
+    <div class="view-field full"><div class="view-label">Fornecedor / Parte</div><div class="view-value">${esc(c.fornecedor)}</div></div>
+    <div class="view-field"><div class="view-label">Volume (Ton/Mês)</div><div class="view-value">${esc(c.volume)} TON/MÊS</div></div>
+    <div class="view-field"><div class="view-label">Preço (R$/KG)</div><div class="view-value">R$ ${esc(c.preco)}</div></div>
+    <div class="view-field"><div class="view-label">Duração do Acordo</div><div class="view-value">${esc(c.duracao)}</div></div>
+    <div class="view-field"><div class="view-label">Previsão de Assinatura</div><div class="view-value">${esc(c.assinatura)}</div></div>
+    ${c.obs ? `<div class="view-field full"><div class="view-label">Observações</div><div class="view-value">${esc(c.obs)}</div></div>` : ''}
+  `;
+  openModal('modal-view');
+}
+
+/* ═══ EXCLUIR ═══ */
+function confirmarExcluir(id) {
+  const c = contratos.find(x => x.id === id);
+  if (!c) return;
+  document.getElementById('confirm-msg').innerHTML =
+    `Tem certeza que deseja excluir o contrato <strong>${id}</strong> com <strong>${esc(c.fornecedor)}</strong>?<br/><br/>Esta ação não pode ser desfeita.`;
+  document.getElementById('btn-confirm-del').onclick = () => {
+    contratos = contratos.filter(x => x.id !== id);
+    if (editingId === id) cancelarEdicao();
+    saveData(); renderLista();
+    closeModal('modal-confirm');
+    showToast(`🗑️  Contrato ${id} excluído.`);
+  };
+  openModal('modal-confirm');
+}
+
+/* ═══ FILTROS ═══ */
+function filtrarStatus(status) {
+  filtroAtivo = status;
+  renderLista();
+  const labels = { '':'Todos', analise:'Em Análise', aprovado:'Aprovados', assinado:'Assinados', recusado:'Recusados' };
+  showToast(`🔍  Exibindo: ${labels[status] || status}`);
+}
+
+/* ═══ PDF ═══ */
+function gerarPDF() {
+  if (!contratos.length) { showToast('⚠️  Nenhum contrato para exportar.'); return; }
+  const hoje = new Date().toLocaleDateString('pt-BR');
+  const rows = contratos.map(c => {
+    const s = statusMap[c.status] || statusMap.analise;
+    const cor = c.status==='aprovado'||c.status==='assinado' ? '#3a7d44' : c.status==='analise' ? '#e67e22' : '#c0392b';
+    return `<tr><td>${esc(c.id)}</td><td>${esc(c.fornecedor)}</td>
+      <td>${esc(c.volume)} ton/mês</td><td>R$ ${esc(c.preco)}/kg</td>
+      <td>${esc(c.duracao)}</td><td>${esc(c.assinatura)}</td>
+      <td style="color:${cor};font-weight:600">${s.label}</td></tr>`;
+  }).join('');
+  const html = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"/>
+<title>Contratos – ${hoje}</title><style>
+body{font-family:'Segoe UI',Arial,sans-serif;margin:0;padding:0;color:#1e0e06;background:#fff}
+.header{background:#2b1610;color:#f5ece2;padding:28px 36px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-size:1.4rem;font-weight:700;color:#d4a055}
+.doc-info{text-align:right;font-size:.78rem;opacity:.75}
+h2{font-size:1rem;color:#5c2e0e;margin:24px 36px 12px;letter-spacing:.08em;text-transform:uppercase}
+table{width:calc(100% - 72px);margin:0 36px;border-collapse:collapse;font-size:.8rem}
+th{background:#2b1610;color:#d4a055;padding:10px 12px;text-align:left;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase}
+td{padding:9px 12px;border-bottom:1px solid #e0cdb8;color:#5a3520}
+tr:nth-child(even) td{background:#faf5ef}
+.footer{margin-top:32px;padding:16px 36px;border-top:2px solid #d4a055;display:flex;justify-content:space-between;font-size:.72rem;color:#9b7055}
+@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+</style></head><body>
+<div class="header"><div class="logo">🍫 Cacaonnattenie</div>
+<div class="doc-info">Relatório de Contratos<br/>Gerado em: ${hoje}</div></div>
+<h2>Contratos em Negociação</h2>
+<table><thead><tr><th>ID</th><th>Fornecedor</th><th>Volume</th><th>Preço</th><th>Duração</th><th>Assinatura</th><th>Status</th></tr></thead>
+<tbody>${rows}</tbody></table>
+<div class="footer"><span>info@cacaonnattenie.com.br | (11) 695 722 9000</span>
+<span>Documento gerado automaticamente</span></div>
+</body></html>`;
+  const win = window.open('', '_blank');
+  if (win) { win.document.write(html); win.document.close(); win.onload = () => { win.focus(); win.print(); }; showToast('📄  Relatório aberto — Ctrl+P para salvar como PDF.'); }
+  else showToast('⚠️  Permita pop-ups para gerar o relatório.');
+}
+
+/* ═══ HELPERS ═══ */
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function closeOnOverlay(e, id) { if (e.target === e.currentTarget) closeModal(id); }
+function showToast(msg, dur=3200) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), dur);
+}
+
+/* ═══ INIT ═══ */
+document.getElementById('c-assinatura').value = new Date().toISOString().split('T')[0];
+loadData();
+renderLista();
+</script>
+</body>
+</html>
