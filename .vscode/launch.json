@@ -1,0 +1,14 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "msedge",
+            "request": "launch",
+            "name": "Open acompanhar entregas.html",
+            "file": "d:\\Users\\vycto\\Downloads\\fabrica_de_chocolate-20260609T175442Z-3-001\\fabrica_de_chocolate\\templates\\acompanhar entregas.html"
+        }
+    ]
+}

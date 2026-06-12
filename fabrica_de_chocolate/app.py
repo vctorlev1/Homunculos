@@ -271,7 +271,7 @@ def index():
         session.permanent = True
         session["usuario_id"] = usuario["id"]
         session["nome_usuario"] = usuario["nome"]
-        return redirect(url_for("estoque"))
+        return redirect(url_for("index"))
 
     # ── CADASTRO ───────────────────────────────
     elif acao == "cadastro":
@@ -344,7 +344,7 @@ def index():
             email_preenchido="", mostrar_aba=None, abrir_modal_recuperacao=False
         )
 
-    return redirect(url_for("index"))
+    return redirect(url_for("estoque"))
 
 
 @app.route("/logout")
